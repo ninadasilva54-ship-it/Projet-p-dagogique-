@@ -3,10 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Commandes de Cours</title>
+<title>Commande de kits de survie</title>
 <link rel="stylesheet" href="style.css">
 <style>
-    /* Petit ajout CSS pour le dashboard */
+    /* --- AJOUTS CSS --- */
+    
+    /* Assurer que les longs titres s'affichent en entier */
+    .course-card h3 {
+        white-space: normal;      /* Autorise le retour à la ligne */
+        overflow: visible;        /* Affiche tout le contenu */
+        word-wrap: break-word;    /* Coupe les mots si vraiment trop longs */
+        min-height: 60px;         /* Hauteur min pour aligner les cartes */
+        margin-bottom: 15px;
+    }
+
+    /* Styles pour le dashboard et les filtres */
     #dashboard table { width: 100%; border-collapse: collapse; margin-top: 15px; }
     #dashboard th, #dashboard td { border: 1px solid #ddd; padding: 8px; text-align: left; }
     #dashboard th { background-color: #f2f2f2; }
@@ -18,7 +29,7 @@
 
 <div class="background-logo"></div>
 
-<h1 class="title">Commandes de Cours</h1>
+<h1 class="title">Commande de kits de survie</h1>
 
 <div id="admin-tab" style="text-align:center; margin-bottom:10px;">
   <button id="show-login-btn" class="button-lydia">Espace Admin</button>
@@ -47,7 +58,7 @@
       <tr>
         <th>Date</th>
         <th>Email</th>
-        <th>Cours</th>
+        <th>Kit / Cours</th>
         <th>Type</th>
         <th>Statut</th>
         <th>Action</th>
@@ -64,7 +75,7 @@
 <script>
   // 🔹 Config Firebase
   const firebaseConfig = {
-    apiKey: "AIzaSyD6G1fbaPTLr7t2gABLA5MoeG1HP3QCuKg", // Attention: évitez de partager cette clé publiquement sur GitHub
+    apiKey: "AIzaSyD6G1fbaPTLr7t2gABLA5MoeG1HP3QCuKg",
     authDomain: "projet-pedago-adcn.firebaseapp.com",
     projectId: "projet-pedago-adcn",
     storageBucket: "projet-pedago-adcn.appspot.com",
@@ -76,9 +87,20 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // 🔹 Liste des cours
+  // 🔹 Liste des cours / Kits (MODIFIÉE)
   const courses = [
-    {name:"UE1 Biopathologies", description:"Cours imprimé", priceNormal:"10€", priceArrondi:"12€"}
+    {
+      name: "UE1 Biopathologies", 
+      description: "Cours imprimé", 
+      priceNormal: "10€", 
+      priceArrondi: "12€"
+    },
+    {
+      name: "UE2 Bases moléculaires, cellulaires et tissulaires des traitements médicamenteux", 
+      description: "Cours imprimé", 
+      priceNormal: "10€", 
+      priceArrondi: "12€"
+    }
   ];
 
   // 🔹 Charger les cours (Vue Client)
@@ -103,7 +125,7 @@
 
   // 🔹 Fonction commande (Client)
   async function handleOrder(course, type) {
-    const email = prompt("Entrez votre email pour recevoir la confirmation :");
+    const email = prompt("Entrez votre email pour recevoir la confirmation pour " + course.name + " :");
     if (!email) return;
 
     try {
@@ -213,9 +235,8 @@
 
     } catch(e) {
       console.error("Erreur : ", e);
-      // Note : Firestore peut demander de créer un Index dans la console. Regardez la console du navigateur (F12).
       if(e.message.includes("index")) {
-        alert("Erreur : Un index Firestore est manquant. Vérifiez la console (F12) et cliquez sur le lien fourni par Firebase.");
+        alert("Erreur : Un index Firestore est manquant. Vérifiez la console (F12).");
       } else {
         alert("Erreur chargement : " + e.message);
       }
