@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Commandes de Cours</title>
+<link rel="stylesheet" href="style.css">
+<style>
+    /* Petit ajout CSS pour le dashboard */
+    #dashboard table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    #dashboard th, #dashboard td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    #dashboard th { background-color: #f2f2f2; }
+    .filter-btn { margin: 5px; cursor: pointer; padding: 5px 10px; }
+    .active-filter { background-color: #4CAF50; color: white; border: none; }
+</style>
+</head>
+<body>
+
+<div class="background-logo"></div>
+
+<h1 class="title">Commandes de Cours</h1>
+
+<div id="admin-tab" style="text-align:center; margin-bottom:10px;">
+  <button id="show-login-btn" class="button-lydia">Espace Admin</button>
+</div>
+
+<div id="admin-login-form" style="display:none; margin-top:20px; text-align:center;">
+  <input type="email" id="admin-email" placeholder="Email admin"><br><br>
+  <input type="password" id="admin-password" placeholder="Mot de passe"><br><br>
+  <button type="button" id="admin-login-btn" class="button-lydia">Se connecter</button>
+  <p id="admin-login-error" style="color:red;"></p>
+</div>
+
+<div class="courses-container" id="courses"></div>
+
+<div id="dashboard" style="display:none; margin-top:20px; padding: 20px; background: #fff;">
+  <h2>Gestion des commandes</h2>
+  
+  <div style="margin-bottom: 15px;">
+    <button onclick="loadOrders('payé')" class="filter-btn active-filter" id="btn-paid">Voir commandes PAYÉES</button>
+    <button onclick="loadOrders('all')" class="filter-btn" id="btn-all">Voir TOUT (pour validation)</button>
+    <button onclick="auth.signOut()" class="filter-btn" style="float:right; background:red; color:white;">Déconnexion</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Email</th>
+        <th>Cours</th>
+        <th>Type</th>
+        <th>Statut</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="orders-table"></tbody>
+  </table>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+<script>
+  // 🔹 Config Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyD6G1fbaPTLr7t2gABLA5MoeG1HP3QCuKg", // Attention: évitez de partager cette clé publiquement sur GitHub
+    authDomain: "projet-pedago-adcn.firebaseapp.com",
+    projectId: "projet-pedago-adcn",
+    storageBucket: "projet-pedago-adcn.appspot.com",
+    messagingSenderId: "124299875258",
+    appId: "1:124299875258:web:981376bd8c6cf4ce4c4383"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  // 🔹 Liste des cours
+  const courses = [
+    {name:"UE1 Biopathologies", description:"Cours imprimé", priceNormal:"10€", priceArrondi:"12€"}
+  ];
+
+  // 🔹 Charger les cours (Vue Client)
+  function loadCourses() {
+    const container = document.getElementById("courses");
+    container.innerHTML = "";
+    courses.forEach(c => {
+      const div = document.createElement("div");
+      div.classList.add("course-card");
+      div.innerHTML = `
+        <h3>${c.name}</h3>
+        <p>${c.description}</p>
+        <button class="button-lydia normal">Prix normal (${c.priceNormal})</button>
+        <button class="button-lydia arrondi">Prix arrondi / don (${c.priceArrondi})</button>
+      `;
+      container.appendChild(div);
+
+      div.querySelector(".normal").addEventListener("click", () => handleOrder(c, "normal"));
+      div.querySelector(".arrondi").addEventListener("click", () => handleOrder(c, "arrondi"));
+    });
+  }
+
+  // 🔹 Fonction commande (Client)
+  async function handleOrder(course, type) {
+    const email = prompt("Entrez votre email pour recevoir la confirmation :");
+    if (!email) return;
+
+    try {
+      await db.collection("orders").add({
+        cours: course.name,
+        email: email,
+        type: type,
+        statut: "en attente", // Statut par défaut
+        date: new Date().toISOString()
+      });
+      alert("Commande enregistrée ! Veuillez procéder au paiement via Lydia pour validation.");
+    } catch(e) {
+      console.error(e);
+      alert("Erreur : " + e.message);
+    }
+  }
+
+  loadCourses();
+
+  // 🔹 Gestion Interface Admin
+  const loginForm = document.getElementById("admin-login-form");
+  const dashboard = document.getElementById("dashboard");
+
+  document.getElementById("show-login-btn").addEventListener("click", () => {
+    if(dashboard.style.display === "block") return; // Déjà connecté
+    loginForm.style.display = (loginForm.style.display === "none") ? "block" : "none";
+  });
+
+  // 🔹 Connexion admin
+  document.getElementById("admin-login-btn").addEventListener("click", (e) => {
+    e.preventDefault();
+    const email = document.getElementById("admin-email").value.trim();
+    const password = document.getElementById("admin-password").value;
+
+    auth.signInWithEmailAndPassword(email, password)
+      .catch(err => {
+        document.getElementById("admin-login-error").innerText = "Erreur de connexion.";
+        console.error(err);
+      });
+  });
+
+  // 🔹 Surveillance de l'état de connexion
+  auth.onAuthStateChanged(user => {
+    if(user){
+      // L'utilisateur est admin
+      loginForm.style.display = "none";
+      document.getElementById("courses").style.display = "none"; // On cache la vue client
+      dashboard.style.display = "block";
+      document.getElementById("show-login-btn").innerText = "Connecté : " + user.email;
+      
+      // Par défaut, on charge uniquement les commandes PAYÉES
+      loadOrders('payé');
+    } else {
+      // Déconnecté
+      dashboard.style.display = "none";
+      document.getElementById("courses").style.display = "block"; // On remet la vue client
+      document.getElementById("show-login-btn").innerText = "Connexion Admin";
+    }
+  });
+
+  // 🔹 Charger les commandes (Admin) avec FILTRE
+  async function loadOrders(filterMode = 'payé') {
+    const table = document.getElementById("orders-table");
+    table.innerHTML = "Chargement...";
+    
+    // Gestion visuelle des boutons filtres
+    document.getElementById('btn-paid').className = filterMode === 'payé' ? 'filter-btn active-filter' : 'filter-btn';
+    document.getElementById('btn-all').className = filterMode === 'all' ? 'filter-btn active-filter' : 'filter-btn';
+
+    try {
+      let query = db.collection("orders");
+
+      // Si le mode est "payé", on filtre. Sinon on affiche tout (trié par date)
+      if (filterMode === 'payé') {
+        query = query.where("statut", "==", "payé");
+      } else {
+        query = query.orderBy("date", "desc");
+      }
+
+      const snapshot = await query.get();
+      
+      table.innerHTML = ""; // Vider le tableau
+      if (snapshot.empty) {
+        table.innerHTML = "<tr><td colspan='6'>Aucune commande trouvée.</td></tr>";
+        return;
+      }
+
+      snapshot.forEach(doc => {
+        const o = doc.data();
+        const tr = document.createElement("tr");
+        
+        // Couleur selon statut
+        const color = o.statut === "payé" ? "green" : "orange";
+
+        tr.innerHTML = `
+          <td>${new Date(o.date).toLocaleString()}</td>
+          <td>${o.email}</td>
+          <td>${o.cours}</td>
+          <td>${o.type}</td>
+          <td style="color:${color}; font-weight:bold;">${o.statut}</td>
+          <td>
+            ${o.statut !== "payé" ? `<button onclick="validatePayment('${doc.id}')">Valider Paiement</button>` : '✅'}
+          </td>
+        `;
+        table.appendChild(tr);
+      });
+
+    } catch(e) {
+      console.error("Erreur : ", e);
+      // Note : Firestore peut demander de créer un Index dans la console. Regardez la console du navigateur (F12).
+      if(e.message.includes("index")) {
+        alert("Erreur : Un index Firestore est manquant. Vérifiez la console (F12) et cliquez sur le lien fourni par Firebase.");
+      } else {
+        alert("Erreur chargement : " + e.message);
+      }
+    }
+  }
+
+  // 🔹 Fonction pour valider une commande (Admin)
+  window.validatePayment = async function(docId) {
+    if(confirm("Confirmer que cette commande a bien été payée ?")) {
+      try {
+        await db.collection("orders").doc(docId).update({ statut: "payé" });
+        // Recharger la vue actuelle
+        const isAllView = document.getElementById('btn-all').classList.contains('active-filter');
+        loadOrders(isAllView ? 'all' : 'payé');
+      } catch(e) {
+        alert("Erreur : " + e.message);
+      }
+    }
+  }
+</script>
+
+</body>
+</html>
