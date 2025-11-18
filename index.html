@@ -15,6 +15,8 @@
         word-wrap: break-word;    /* Coupe les mots si vraiment trop longs */
         min-height: 60px;         /* Hauteur min pour aligner les cartes */
         margin-bottom: 15px;
+        font-size: 1.1em;         /* Légèrement ajusté pour les longs titres */
+        line-height: 1.4;
     }
 
     /* Styles pour le dashboard et les filtres */
@@ -87,10 +89,10 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // 🔹 Liste des cours / Kits (MODIFIÉE)
+  // 🔹 Liste des cours / Kits (MISE À JOUR)
   const courses = [
     {
-      name: "UE1 Biopathologies", 
+      name: "UE1 Biopathologies tissulaires, illustrations et moyens d’exploration", 
       description: "Cours imprimé", 
       priceNormal: "10€", 
       priceArrondi: "12€"
