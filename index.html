@@ -41,8 +41,11 @@
     #dashboard table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em; }
     #dashboard th, #dashboard td { border: 1px solid #ddd; padding: 8px; text-align: left; }
     #dashboard th { background-color: #f2f2f2; }
-    .filter-btn { margin: 5px; cursor: pointer; padding: 5px 10px; }
-    .active-filter { background-color: #4CAF50; color: white; border: none; }
+    
+    /* Boutons de filtres du dashboard */
+    .filter-btn { margin: 5px; cursor: pointer; padding: 8px 15px; border-radius: 4px; border: 1px solid #ccc; background: #eee;}
+    .active-filter { background-color: #0099ff; color: white; border-color: #007acc; }
+    .btn-archive { background-color: #666; color: white; }
 
     /* --- Styles de la Modale (Fenêtre de formulaire) --- */
     .modal-overlay {
@@ -112,10 +115,12 @@
 <div id="dashboard" style="display:none; margin-top:20px; padding: 20px; background: #fff;">
   <h2>Gestion des commandes</h2>
   
-  <div style="margin-bottom: 15px;">
-    <button onclick="loadOrders('payé')" class="filter-btn active-filter" id="btn-paid">Commandes PAYÉES</button>
-    <button onclick="loadOrders('all')" class="filter-btn" id="btn-all">Toutes les commandes</button>
-    <button onclick="auth.signOut()" class="filter-btn" style="float:right; background:red; color:white;">Déconnexion</button>
+  <div style="margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+    <button onclick="loadOrders('pending')" class="filter-btn active-filter" id="btn-pending">📋 À TRAITER (En attente)</button>
+    <button onclick="loadOrders('archive')" class="filter-btn btn-archive" id="btn-archive">🗄️ ARCHIVES (Payées)</button>
+    <button onclick="loadOrders('all')" class="filter-btn" id="btn-all">Voir Tout</button>
+    
+    <button onclick="auth.signOut()" class="filter-btn" style="float:right; background:red; color:white; border:none;">Déconnexion</button>
   </div>
 
   <div style="overflow-x:auto;">
@@ -159,28 +164,35 @@
   // 🔹 Lien Lydia
   const LYDIA_LINK = "https://pots.lydia.me/collect/commandes-tableaux-recap-9985755/fr";
 
-  // 🔹 Liste des cours (MISE À JOUR AVEC 4 PRIX)
-  // MODIFIEZ LES PRIX ICI SELON VOS BESOINS
+  // 🔹 Liste des cours
   const courses = [
     {
       name: "UE1 Biopathologies tissulaires, illustrations et moyens d’exploration", 
-      description: "Cours imprimé", 
-      priceBW: "8,40€",      // N&B Exact
-      priceBWR: "9€",        // N&B Arrondi
-      priceCol: "15,50€",    // Couleur Exact (EXEMPLE)
-      priceColR: "16€"       // Couleur Arrondi (EXEMPLE)
+      description: "Kit de Survie", 
+      priceBW: "4,45€",      
+      priceBWR: "5€",        
+      priceCol: "9,90€",    
+      priceColR: "10€"       
     },
     {
       name: "UE2 Bases moléculaires, cellulaires et tissulaires des traitements médicamenteux", 
-      description: "Cours imprimé", 
-      priceBW: "8,40€",
-      priceBWR: "9€",
-      priceCol: "15,50€",
-      priceColR: "16€"
+      description: "Kit de Survie", 
+      priceBW: "3,75€",
+      priceBWR: "4€",
+      priceCol: "7,80€",
+      priceColR: "8€"
+    },
+    {
+      name: "UE3 Tissus sanguins et système immunitaire", 
+      description: "Kit de Survie", 
+      priceBW: "3,05€",
+      priceBWR: "3,50€",
+      priceCol: "5,70€",
+      priceColR: "6€"
     }
   ];
 
-  // Variables temporaires pour la commande en cours
+  // Variables temporaires
   let currentSelectedCourse = null;
   let currentSelectedType = null;
   let currentSelectedPrice = null;
@@ -193,7 +205,6 @@
       const div = document.createElement("div");
       div.classList.add("course-card");
       
-      // Construction HTML avec 4 boutons organisés
       div.innerHTML = `
         <h3>${c.name}</h3>
         <p>${c.description}</p>
@@ -222,18 +233,14 @@
     });
   }
 
-  // 🔹 Gestion de la Modale (Ouverture/Fermeture)
+  // 🔹 Gestion de la Modale
   const modal = document.getElementById("order-modal");
   const inputNom = document.getElementById("input-nom");
   const inputPrenom = document.getElementById("input-prenom");
   const inputEmail = document.getElementById("input-email");
 
-  // Nouvelle fonction simplifiée pour passer les infos directement depuis le HTML
   function initModal(courseName, typeKey, priceValue) {
-      // Retrouver l'objet course complet si besoin (ici on utilise les params passés)
       currentSelectedCourse = courses.find(c => c.name === courseName);
-      
-      // Définir un nom lisible pour le type
       let typeLabel = "";
       if(typeKey === 'nb_exact') typeLabel = "Noir & Blanc (Exact)";
       if(typeKey === 'nb_arrondi') typeLabel = "Noir & Blanc (Arrondi)";
@@ -243,57 +250,47 @@
       currentSelectedType = typeLabel;
       currentSelectedPrice = priceValue;
       
-      // Mettre à jour le texte de la modale
       document.getElementById("modal-title").innerText = "Finaliser la commande";
       document.getElementById("modal-desc").innerText = `Choix : ${courseName}\nType : ${typeLabel}\nPrix : ${priceValue}`;
-      
       modal.style.display = "flex";
   }
 
   function closeModal() {
       modal.style.display = "none";
-      // Reset des champs
-      inputNom.value = "";
-      inputPrenom.value = "";
-      inputEmail.value = "";
+      inputNom.value = ""; inputPrenom.value = ""; inputEmail.value = "";
   }
 
-  // 🔹 Validation de la commande et Redirection Lydia
+  // 🔹 Validation Commande
   document.getElementById("confirm-order-btn").addEventListener("click", async () => {
       const nom = inputNom.value.trim();
       const prenom = inputPrenom.value.trim();
       const email = inputEmail.value.trim();
 
       if(!nom || !prenom || !email) {
-          alert("Merci de remplir tous les champs (Nom, Prénom et Email).");
+          alert("Merci de remplir tous les champs.");
           return;
       }
 
-      // Désactiver le bouton pour éviter double clic
       const btn = document.getElementById("confirm-order-btn");
       btn.innerText = "Enregistrement...";
       btn.disabled = true;
 
       try {
-        // 1. Enregistrer dans Firebase
         await db.collection("orders").add({
           cours: currentSelectedCourse.name,
-          type: currentSelectedType, // Contient maintenant ex: "Couleur (Arrondi)"
-          prix: currentSelectedPrice, // On stocke aussi le prix pour info admin
+          type: currentSelectedType,
+          prix: currentSelectedPrice,
           nom: nom,
           prenom: prenom,
           email: email,
           statut: "en attente", 
           date: new Date().toISOString()
         });
-
-        // 2. Rediriger vers Lydia
-        alert("Commande enregistrée ! Vous allez être redirigé vers Lydia pour le paiement.");
+        alert("Commande enregistrée ! Vous allez être redirigé vers Lydia.");
         window.location.href = LYDIA_LINK; 
-
       } catch(e) {
         console.error(e);
-        alert("Erreur lors de l'enregistrement : " + e.message);
+        alert("Erreur : " + e.message);
         btn.innerText = "Valider et Payer via Lydia";
         btn.disabled = false;
       }
@@ -313,27 +310,22 @@
     loginForm.style.display = (loginForm.style.display === "none") ? "block" : "none";
   });
 
-  // Connexion
   document.getElementById("admin-login-btn").addEventListener("click", (e) => {
     e.preventDefault();
     const email = document.getElementById("admin-email").value.trim();
     const password = document.getElementById("admin-password").value;
-
-    auth.signInWithEmailAndPassword(email, password)
-      .catch(err => {
+    auth.signInWithEmailAndPassword(email, password).catch(err => {
         document.getElementById("admin-login-error").innerText = "Erreur de connexion.";
-        console.error(err);
-      });
+    });
   });
 
-  // Surveillance Auth
   auth.onAuthStateChanged(user => {
     if(user){
       loginForm.style.display = "none";
       document.getElementById("courses").style.display = "none"; 
       dashboard.style.display = "block";
       document.getElementById("show-login-btn").innerText = "Admin : " + user.email;
-      loadOrders('payé'); // Chargement par défaut
+      loadOrders('pending'); // CHARGEMENT PAR DÉFAUT : Commandes à traiter
     } else {
       dashboard.style.display = "none";
       document.getElementById("courses").style.display = "block"; 
@@ -341,20 +333,27 @@
     }
   });
 
-  // Charger les commandes Admin
-  async function loadOrders(filterMode = 'payé') {
+  // 🔹 Charger les commandes (Logique "Archives" vs "À traiter")
+  async function loadOrders(filterMode = 'pending') {
     const table = document.getElementById("orders-table");
-    table.innerHTML = "<tr><td colspan='8'>Chargement...</td></tr>";
+    table.innerHTML = "<tr><td colspan='8' style='text-align:center;'>Chargement...</td></tr>";
     
-    document.getElementById('btn-paid').className = filterMode === 'payé' ? 'filter-btn active-filter' : 'filter-btn';
-    document.getElementById('btn-all').className = filterMode === 'all' ? 'filter-btn active-filter' : 'filter-btn';
+    // Gestion des classes des boutons (visuel)
+    document.getElementById('btn-pending').className = 'filter-btn' + (filterMode === 'pending' ? ' active-filter' : '');
+    document.getElementById('btn-archive').className = 'filter-btn btn-archive' + (filterMode === 'archive' ? ' active-filter' : '');
+    document.getElementById('btn-all').className = 'filter-btn' + (filterMode === 'all' ? ' active-filter' : '');
 
     try {
       let query = db.collection("orders");
 
-      if (filterMode === 'payé') {
+      if (filterMode === 'pending') {
+        // Mode "À Traiter" : Seulement les non payées
+        query = query.where("statut", "==", "en attente");
+      } else if (filterMode === 'archive') {
+        // Mode "Archive" : Seulement les payées
         query = query.where("statut", "==", "payé");
       } else {
+        // Mode "Tout" : Trié par date
         query = query.orderBy("date", "desc");
       }
 
@@ -362,7 +361,7 @@
       
       table.innerHTML = ""; 
       if (snapshot.empty) {
-        table.innerHTML = "<tr><td colspan='8'>Aucune commande trouvée.</td></tr>";
+        table.innerHTML = "<tr><td colspan='8' style='text-align:center; padding:20px;'>Aucune commande dans cette section.</td></tr>";
         return;
       }
 
@@ -370,22 +369,28 @@
         const o = doc.data();
         const tr = document.createElement("tr");
         
-        const color = o.statut === "payé" ? "green" : "orange";
+        const color = o.statut === "payé" ? "green" : "#e60000";
         const nomAffichage = o.nom ? o.nom.toUpperCase() : "-";
         const prenomAffichage = o.prenom ? o.prenom : "-";
-        const prixAffichage = o.prix ? `(${o.prix})` : ""; // Affichage du prix si dispo
+        const prixAffichage = o.prix ? `(${o.prix})` : ""; 
+
+        // Si la commande est archivée (payée), on n'affiche plus le bouton de validation
+        let actionButton = '';
+        if(o.statut === "payé") {
+            actionButton = '✅ Archivé';
+        } else {
+            actionButton = `<button onclick="validatePayment('${doc.id}')" style="cursor:pointer; background:#4CAF50; color:white; border:none; padding:5px 10px; border-radius:4px;">Valider Paiement</button>`;
+        }
 
         tr.innerHTML = `
-          <td>${new Date(o.date).toLocaleDateString()} ${new Date(o.date).toLocaleTimeString()}</td>
+          <td>${new Date(o.date).toLocaleDateString()} <small>${new Date(o.date).toLocaleTimeString()}</small></td>
           <td><strong>${nomAffichage}</strong></td>
           <td>${prenomAffichage}</td>
           <td>${o.email}</td>
           <td>${o.cours}</td>
           <td>${o.type} ${prixAffichage}</td>
-          <td style="color:${color}; font-weight:bold;">${o.statut}</td>
-          <td>
-            ${o.statut !== "payé" ? `<button onclick="validatePayment('${doc.id}')" style="cursor:pointer; background:#4CAF50; color:white; border:none; padding:5px;">Valider Paiement</button>` : '✅'}
-          </td>
+          <td style="color:${color}; font-weight:bold;">${o.statut.toUpperCase()}</td>
+          <td style="text-align:center;">${actionButton}</td>
         `;
         table.appendChild(tr);
       });
@@ -393,20 +398,20 @@
     } catch(e) {
       console.error("Erreur : ", e);
       if(e.message.includes("index")) {
-        alert("Erreur : Index Firestore manquant. Vérifiez la console.");
+        alert("ATTENTION ADMIN : Un index Firestore est manquant pour trier par date. Regardez la console du navigateur.");
       } else {
         alert("Erreur chargement : " + e.message);
       }
     }
   }
 
-  // Valider une commande
+  // Valider une commande (la fait passer dans les archives)
   window.validatePayment = async function(docId) {
-    if(confirm("Avez-vous bien reçu le paiement Lydia correspondant à cette commande ?")) {
+    if(confirm("Avez-vous reçu l'argent ? Cette action déplacera la commande dans les Archives.")) {
       try {
         await db.collection("orders").doc(docId).update({ statut: "payé" });
-        const isAllView = document.getElementById('btn-all').classList.contains('active-filter');
-        loadOrders(isAllView ? 'all' : 'payé');
+        // Recharge la vue actuelle (donc la commande va disparaître de "À traiter")
+        loadOrders('pending'); 
       } catch(e) {
         alert("Erreur : " + e.message);
       }
