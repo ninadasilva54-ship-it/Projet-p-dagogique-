@@ -35,7 +35,8 @@
     
     /* Couleurs spécifiques des boutons */
     .btn-bw { background-color: #555 !important; color: white; } /* Gris pour N&B */
-    .btn-col { background-color: #6C63FF !important; color: white; } /* Violet/Bleu pour Couleur */
+    /* CHANGEMENT ICI : ROUGE VIF */
+    .btn-col { background-color: #FF0000 !important; color: white; } /* ROUGE VIF pour Couleur */
 
     /* Styles Dashboard Admin */
     #dashboard table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em; }
@@ -164,7 +165,7 @@
   // 🔹 Lien Lydia
   const LYDIA_LINK = "https://pots.lydia.me/collect/commandes-tableaux-recap-9985755/fr";
 
-  // 🔹 Liste des cours (INCLUT BIEN L'UE3)
+  // 🔹 Liste des cours
   const courses = [
     {
       name: "UE1 Biopathologies tissulaires, illustrations et moyens d’exploration", 
@@ -201,7 +202,7 @@
   function loadCourses() {
     const container = document.getElementById("courses");
     container.innerHTML = "";
-    courses.forEach(c => { // Cette boucle garantit que tous les éléments sont affichés
+    courses.forEach(c => { 
       const div = document.createElement("div");
       div.classList.add("course-card");
       
