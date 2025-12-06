@@ -148,8 +148,7 @@
             <th>Prénom</th>
             <th>Email</th>
             <th>Kit / Cours</th>
-            <th>Type</th>
-            <th>Statut</th>
+            <th>Détail du Prix</th> <th>Statut</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -213,6 +212,15 @@
   let currentSelectedType = null;
   let currentSelectedPrice = null;
 
+  // Fonction de traduction pour le Dashboard (pour correspondre à la demande utilisateur)
+  function formatTypeForDashboard(type) {
+      if (type === "Noir & Blanc (Exact)") return "Normal Noir & Blanc";
+      if (type === "Noir & Blanc (Arrondi)") return "Arrondi Noir & Blanc";
+      if (type === "Couleur (Exact)") return "Normal Couleurs";
+      if (type === "Couleur (Arrondi)") return "Arrondi Couleurs";
+      return type; // Fallback (au cas où le format change)
+  }
+
   // 🔹 Charger les cours (Vue Client)
   function loadCourses() {
     const container = document.getElementById("courses");
@@ -258,6 +266,7 @@
   function initModal(courseName, typeKey, priceValue) {
       currentSelectedCourse = courses.find(c => c.name === courseName);
       let typeLabel = "";
+      // Les labels stockés dans Firebase
       if(typeKey === 'nb_exact') typeLabel = "Noir & Blanc (Exact)";
       if(typeKey === 'nb_arrondi') typeLabel = "Noir & Blanc (Arrondi)";
       if(typeKey === 'col_exact') typeLabel = "Couleur (Exact)";
@@ -388,7 +397,9 @@
         const color = o.statut === "payé" ? "green" : "#e60000";
         const nomAffichage = o.nom ? o.nom.toUpperCase() : "-";
         const prenomAffichage = o.prenom ? o.prenom : "-";
-        const prixAffichage = o.prix ? `(${o.prix})` : ""; 
+        const prixAffichage = o.prix ? ` (${o.prix})` : ""; 
+        
+        const formattedType = formatTypeForDashboard(o.type); // Utilisation de la fonction de formatage
 
         // Si la commande est archivée (payée), on n'affiche plus le bouton de validation
         let actionButton = '';
@@ -404,8 +415,7 @@
           <td>${prenomAffichage}</td>
           <td>${o.email}</td>
           <td>${o.cours}</td>
-          <td>${o.type} ${prixAffichage}</td>
-          <td style="color:${color}; font-weight:bold;">${o.statut.toUpperCase()}</td>
+          <td>${formattedType}${prixAffichage}</td> <td style="color:${color}; font-weight:bold;">${o.statut.toUpperCase()}</td>
           <td style="text-align:center;">${actionButton}</td>
         `;
         table.appendChild(tr);
