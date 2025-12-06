@@ -164,14 +164,14 @@
   // 🔹 Lien Lydia
   const LYDIA_LINK = "https://pots.lydia.me/collect/commandes-tableaux-recap-9985755/fr";
 
-  // 🔹 Liste des cours
+  // 🔹 Liste des cours (INCLUT BIEN L'UE3)
   const courses = [
     {
       name: "UE1 Biopathologies tissulaires, illustrations et moyens d’exploration", 
       description: "Kit de Survie", 
-      priceBW: "4,45€",      
-      priceBWR: "5€",        
-      priceCol: "9,90€",    
+      priceBW: "4,45€",       
+      priceBWR: "5€",         
+      priceCol: "9,90€",     
       priceColR: "10€"       
     },
     {
@@ -201,7 +201,7 @@
   function loadCourses() {
     const container = document.getElementById("courses");
     container.innerHTML = "";
-    courses.forEach(c => {
+    courses.forEach(c => { // Cette boucle garantit que tous les éléments sont affichés
       const div = document.createElement("div");
       div.classList.add("course-card");
       
