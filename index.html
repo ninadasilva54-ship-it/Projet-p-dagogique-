@@ -19,6 +19,24 @@
         line-height: 1.4;
     }
 
+    /* Organisation des boutons de prix */
+    .price-section {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #eee;
+    }
+    .price-label {
+        font-weight: bold;
+        font-size: 0.9em;
+        margin-bottom: 5px;
+        display: block;
+        color: #333;
+    }
+    
+    /* Couleurs spécifiques des boutons */
+    .btn-bw { background-color: #555 !important; color: white; } /* Gris pour N&B */
+    .btn-col { background-color: #6C63FF !important; color: white; } /* Violet/Bleu pour Couleur */
+
     /* Styles Dashboard Admin */
     #dashboard table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em; }
     #dashboard th, #dashboard td { border: 1px solid #ddd; padding: 8px; text-align: left; }
@@ -26,7 +44,7 @@
     .filter-btn { margin: 5px; cursor: pointer; padding: 5px 10px; }
     .active-filter { background-color: #4CAF50; color: white; border: none; }
 
-    /* --- NOUVEAU : Styles de la Modale (Fenêtre de formulaire) --- */
+    /* --- Styles de la Modale (Fenêtre de formulaire) --- */
     .modal-overlay {
         display: none; /* Caché par défaut */
         position: fixed;
@@ -141,25 +159,31 @@
   // 🔹 Lien Lydia
   const LYDIA_LINK = "https://pots.lydia.me/collect/commandes-tableaux-recap-9985755/fr";
 
-  // 🔹 Liste des cours
+  // 🔹 Liste des cours (MISE À JOUR AVEC 4 PRIX)
+  // MODIFIEZ LES PRIX ICI SELON VOS BESOINS
   const courses = [
     {
       name: "UE1 Biopathologies tissulaires, illustrations et moyens d’exploration", 
       description: "Cours imprimé", 
-      priceNormal: "8,40€", 
-      priceArrondi: "9€"
+      priceBW: "8,40€",      // N&B Exact
+      priceBWR: "9€",        // N&B Arrondi
+      priceCol: "15,50€",    // Couleur Exact (EXEMPLE)
+      priceColR: "16€"       // Couleur Arrondi (EXEMPLE)
     },
     {
       name: "UE2 Bases moléculaires, cellulaires et tissulaires des traitements médicamenteux", 
       description: "Cours imprimé", 
-      priceNormal: "8,40€", 
-      priceArrondi: "9€"
+      priceBW: "8,40€",
+      priceBWR: "9€",
+      priceCol: "15,50€",
+      priceColR: "16€"
     }
   ];
 
   // Variables temporaires pour la commande en cours
   let currentSelectedCourse = null;
   let currentSelectedType = null;
+  let currentSelectedPrice = null;
 
   // 🔹 Charger les cours (Vue Client)
   function loadCourses() {
@@ -168,16 +192,33 @@
     courses.forEach(c => {
       const div = document.createElement("div");
       div.classList.add("course-card");
+      
+      // Construction HTML avec 4 boutons organisés
       div.innerHTML = `
         <h3>${c.name}</h3>
         <p>${c.description}</p>
-        <button class="button-lydia normal">Prix normal (${c.priceNormal})</button>
-        <button class="button-lydia arrondi">Prix arrondi / don (${c.priceArrondi})</button>
+        
+        <div class="price-section">
+            <span class="price-label">🖨️ Noir & Blanc</span>
+            <button class="button-lydia btn-bw" onclick="initModal('${c.name}', 'nb_exact', '${c.priceBW}')">
+                Exact (${c.priceBW})
+            </button>
+            <button class="button-lydia btn-bw" onclick="initModal('${c.name}', 'nb_arrondi', '${c.priceBWR}')">
+                Arrondi (${c.priceBWR})
+            </button>
+        </div>
+
+        <div class="price-section">
+            <span class="price-label">🌈 Couleur</span>
+            <button class="button-lydia btn-col" onclick="initModal('${c.name}', 'col_exact', '${c.priceCol}')">
+                Exact (${c.priceCol})
+            </button>
+            <button class="button-lydia btn-col" onclick="initModal('${c.name}', 'col_arrondi', '${c.priceColR}')">
+                Arrondi (${c.priceColR})
+            </button>
+        </div>
       `;
       container.appendChild(div);
-
-      div.querySelector(".normal").addEventListener("click", () => openModal(c, "normal"));
-      div.querySelector(".arrondi").addEventListener("click", () => openModal(c, "arrondi"));
     });
   }
 
@@ -187,14 +228,24 @@
   const inputPrenom = document.getElementById("input-prenom");
   const inputEmail = document.getElementById("input-email");
 
-  function openModal(course, type) {
-      currentSelectedCourse = course;
-      currentSelectedType = type;
+  // Nouvelle fonction simplifiée pour passer les infos directement depuis le HTML
+  function initModal(courseName, typeKey, priceValue) {
+      // Retrouver l'objet course complet si besoin (ici on utilise les params passés)
+      currentSelectedCourse = courses.find(c => c.name === courseName);
+      
+      // Définir un nom lisible pour le type
+      let typeLabel = "";
+      if(typeKey === 'nb_exact') typeLabel = "Noir & Blanc (Exact)";
+      if(typeKey === 'nb_arrondi') typeLabel = "Noir & Blanc (Arrondi)";
+      if(typeKey === 'col_exact') typeLabel = "Couleur (Exact)";
+      if(typeKey === 'col_arrondi') typeLabel = "Couleur (Arrondi)";
+
+      currentSelectedType = typeLabel;
+      currentSelectedPrice = priceValue;
       
       // Mettre à jour le texte de la modale
       document.getElementById("modal-title").innerText = "Finaliser la commande";
-      const prix = type === "normal" ? course.priceNormal : course.priceArrondi;
-      document.getElementById("modal-desc").innerText = `Vous avez choisi : ${course.name} (${prix})`;
+      document.getElementById("modal-desc").innerText = `Choix : ${courseName}\nType : ${typeLabel}\nPrix : ${priceValue}`;
       
       modal.style.display = "flex";
   }
@@ -227,11 +278,12 @@
         // 1. Enregistrer dans Firebase
         await db.collection("orders").add({
           cours: currentSelectedCourse.name,
-          type: currentSelectedType,
+          type: currentSelectedType, // Contient maintenant ex: "Couleur (Arrondi)"
+          prix: currentSelectedPrice, // On stocke aussi le prix pour info admin
           nom: nom,
           prenom: prenom,
           email: email,
-          statut: "en attente", // Reste en attente jusqu'à validation manuelle admin
+          statut: "en attente", 
           date: new Date().toISOString()
         });
 
@@ -319,9 +371,9 @@
         const tr = document.createElement("tr");
         
         const color = o.statut === "payé" ? "green" : "orange";
-        // Gestion cas où nom/prenom anciens sont manquants
         const nomAffichage = o.nom ? o.nom.toUpperCase() : "-";
         const prenomAffichage = o.prenom ? o.prenom : "-";
+        const prixAffichage = o.prix ? `(${o.prix})` : ""; // Affichage du prix si dispo
 
         tr.innerHTML = `
           <td>${new Date(o.date).toLocaleDateString()} ${new Date(o.date).toLocaleTimeString()}</td>
@@ -329,7 +381,7 @@
           <td>${prenomAffichage}</td>
           <td>${o.email}</td>
           <td>${o.cours}</td>
-          <td>${o.type}</td>
+          <td>${o.type} ${prixAffichage}</td>
           <td style="color:${color}; font-weight:bold;">${o.statut}</td>
           <td>
             ${o.statut !== "payé" ? `<button onclick="validatePayment('${doc.id}')" style="cursor:pointer; background:#4CAF50; color:white; border:none; padding:5px;">Valider Paiement</button>` : '✅'}
@@ -350,7 +402,6 @@
 
   // Valider une commande
   window.validatePayment = async function(docId) {
-    // L'admin doit vérifier sur son téléphone que Lydia a bien reçu l'argent avant de cliquer ici
     if(confirm("Avez-vous bien reçu le paiement Lydia correspondant à cette commande ?")) {
       try {
         await db.collection("orders").doc(docId).update({ statut: "payé" });
