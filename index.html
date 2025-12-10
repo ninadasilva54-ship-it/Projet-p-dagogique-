@@ -6,7 +6,7 @@
 <title>Commande de kits de survie</title>
 <link rel="stylesheet" href="style.css">
 <style>
-    /* --- AJOUTS CSS --- */
+    /* --- DÉBUT DES STYLES PERSONNALISÉS (HAUTE PRIORITÉ) --- */
     
     /* Styles des cartes de cours */
     .course-card h3 {
@@ -33,17 +33,19 @@
         color: #333;
     }
     
-    /* 🌟 COULEURS PERSONNALISÉES AVEC !IMPORTANT POUR FORCER LA PRIORITÉ 🌟 */
-    .btn-bw { background-color: #555 !important; color: white !important; } /* Gris Foncé pour N&B */
-    .btn-col { background-color: #FF0000 !important; color: white !important; } /* ROUGE VIF pour Couleur */
-
-    /* ROUGE VIF pour les boutons de connexion Admin */
-    #show-login-btn, #admin-login-btn {
+    /* 🔴 ROUGE VIF pour les boutons Couleur et Admin */
+    .btn-col, #show-login-btn, #admin-login-btn {
         background-color: #FF0000 !important; 
         color: white !important;
+        border: 1px solid #FF0000 !important; /* Ajout d'une bordure pour la cohérence */
     }
-    /* Archive en Gris pour contraste */
-    .btn-archive { background-color: #666 !important; color: white !important; }
+
+    /* ⚫ GRIS FONCÉ pour les boutons Noir & Blanc */
+    .btn-bw {
+        background-color: #555 !important;
+        color: white !important;
+        border: 1px solid #555 !important;
+    }
 
     /* Styles Dashboard Admin */
     #dashboard table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em; }
@@ -62,13 +64,12 @@
         font-weight: bold;
         text-transform: uppercase;
     }
-    .active-filter { background-color: #0099ff !important; color: white !important; border-color: #007acc; }
-
+    .active-filter { background-color: #0099ff !important; color: white !important; border-color: #007acc !important; }
+    .btn-archive { background-color: #666 !important; color: white !important; border-color: #666 !important; }
 
     /* --- Styles de la Modale (Fenêtre de formulaire) --- */
     .modal-overlay {
-        /* ... propriétés inchangées ... */
-        display: none; /* Caché par défaut */
+        display: none; /* Caché par défaut, mais aussi masqué en HTML pour priorité */
         position: fixed;
         top: 0; left: 0;
         width: 100%; height: 100%;
@@ -96,6 +97,7 @@
     }
     .btn-confirm { background-color: #0099ff; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; width: 100%; font-size: 16px; margin-top: 10px;}
     .btn-cancel { background-color: #aaa; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; margin-top: 10px; width: 100%; }
+    /* --- FIN DES STYLES PERSONNALISÉS --- */
 </style>
 </head>
 <body>
@@ -374,7 +376,7 @@
     try {
       let query = db.collection("orders");
 
-      // Tri des plus RÉCENTES aux plus ANCIENNES pour tous les modes
+      // Tri des plus RÉCENTES aux plus ANCIENNES pour tous les modes (nécessite l'index Firestore)
       if (filterMode === 'pending') {
         query = query.where("statut", "==", "en attente").orderBy("date", "desc"); 
       } else if (filterMode === 'archive') {
