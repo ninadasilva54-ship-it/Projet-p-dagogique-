@@ -6,7 +6,7 @@
 <title>Commande de kits de survie</title>
 <link rel="stylesheet" href="style.css">
 <style>
-    /* --- AJOUTS CSS --- */
+    /* --- AJOUTS CSS ORIGINAUX ET NOUVEAUX --- */
     
     /* Styles des cartes de cours */
     .course-card h3 {
@@ -33,7 +33,7 @@
         color: #333;
     }
     
-    /* Couleurs spécifiques des boutons */
+    /* Couleurs spécifiques des boutons (ORIGINALES) */
     .btn-bw { background-color: #555 !important; color: white; } /* Gris pour N&B */
     .btn-col { background-color: #FF0000 !important; color: white; } /* ROUGE VIF pour Couleur */
 
@@ -43,7 +43,7 @@
     #dashboard th { background-color: #f2f2f2; border: 1px solid #ddd; }
     #dashboard td { border: 1px solid #ddd; }
     
-    /* Styles spécifiques pour le regroupement/accordéon */
+    /* Styles spécifiques pour le regroupement/accordéon (NOUVEAU) */
     .order-group-row {
         cursor: pointer;
         background-color: #e9e9e9; /* Gris clair pour les entêtes de groupe */
@@ -66,8 +66,7 @@
         border-bottom: 1px solid #ddd; /* Bordure inférieure à la fin du groupe */
     }
 
-
-    /* Boutons de filtres du dashboard (Mise à jour police/style) */
+    /* Boutons de filtres du dashboard (ORIGINAL) */
     .filter-btn { 
         margin: 5px; 
         cursor: pointer; 
@@ -75,22 +74,22 @@
         border-radius: 4px; 
         border: 1px solid #ccc; 
         background: #eee;
-        font-family: inherit; /* Utilise la police principale du corps */
-        font-weight: bold; /* Pour imiter le style des boutons de commande */
+        font-family: inherit;
+        font-weight: bold;
         text-transform: uppercase;
     }
-    .active-filter { background-color: #0099ff; color: white; border-color: #007acc; }
+    .active-filter { background-color: #0099ff; color: white; border-color: #007acc; } /* Bleu pour actif */
     .btn-archive { background-color: #666; color: white; }
 
-    /* ROUGE VIF pour les boutons de connexion Admin */
+    /* ROUGE VIF pour les boutons de connexion Admin (ORIGINAL) */
     #show-login-btn, #admin-login-btn {
         background-color: #FF0000 !important; 
         color: white !important;
     }
 
-    /* --- Styles de la Modale (Fenêtre de formulaire) --- */
+    /* --- Styles de la Modale (ORIGINAL) --- */
     .modal-overlay {
-        display: none; /* Caché par défaut */
+        display: none;
         position: fixed;
         top: 0; left: 0;
         width: 100%; height: 100%;
@@ -388,7 +387,7 @@
     table.innerHTML = "";
 
     if (Object.keys(groupedOrders).length === 0) {
-      table.innerHTML = "<tr><td colspan='5' style='text-align:center; padding:20px;'>Aucune commande dans cette section.</td></tr>";
+      table.innerHTML = "<tr><td colspan='5' style='text-align:center; padding:20px;'>Aucune commande dans cette section.</td></tr>"; // 5 colonnes pour le nouveau tableau
       return;
     }
 
@@ -453,7 +452,6 @@
         `;
         table.appendChild(detailRow);
       });
-  });
   }
   
   // 💡 NOUVEAU : Fonction pour ouvrir/fermer le détail des commandes
@@ -505,9 +503,17 @@
       // 💡 LOGIQUE DE REGROUPEMENT
       const groupedOrders = {};
 
+      if (snapshot.empty) {
+        table.innerHTML = "<tr><td colspan='5' style='text-align:center; padding:20px;'>Aucune commande dans cette section.</td></tr>";
+        return;
+      }
+
       snapshot.forEach(doc => {
         const o = doc.data();
-        const clientKey = `${o.nom.toLowerCase()}-${o.prenom.toLowerCase()}-${o.email}`; // Clé de regroupement
+        const nom = (o.nom || '').toLowerCase().trim();
+        const prenom = (o.prenom || '').toLowerCase().trim();
+        const email = (o.email || '').toLowerCase().trim();
+        const clientKey = `${nom}-${prenom}-${email}`; // Clé de regroupement
         
         if (!groupedOrders[clientKey]) {
           groupedOrders[clientKey] = {
@@ -524,6 +530,7 @@
 
     } catch(e) {
       console.error("Erreur : ", e);
+      // Affichage de l'alerte d'index pour l'admin
       if(e.message.includes("index")) {
         alert("ATTENTION ADMIN : Un index Firestore est manquant pour trier par date. Regardez la console du navigateur. L'index requis est 'statut, date' ou 'date' seul.");
       } else {
