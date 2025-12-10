@@ -6,116 +6,93 @@
 <title>Commande de kits de survie</title>
 <link rel="stylesheet" href="style.css">
 <style>
-    /* --- Styles pour le Dashboard Admin et la Vue Client --- */
-    /* Styles des cartes de cours */
-    .course-card h3 {
-        white-space: normal;
-        overflow: visible;
-        word-wrap: break-word;
-        min-height: 60px;
-        margin-bottom: 15px;
-        font-size: 1.1em;
-        line-height: 1.4;
-    }
+    /* --- AJOUTS CSS --- */
+    
+    /* Styles des cartes de cours */
+    .course-card h3 {
+        white-space: normal;
+        overflow: visible;
+        word-wrap: break-word;
+        min-height: 60px;
+        margin-bottom: 15px;
+        font-size: 1.1em;
+        line-height: 1.4;
+    }
 
-    /* Organisation des boutons de prix */
-    .price-section {
-        margin-top: 10px;
-        padding-top: 10px;
-        border-top: 1px solid #eee;
-    }
-    .price-label {
-        font-weight: bold;
-        font-size: 0.9em;
-        margin-bottom: 5px;
-        display: block;
-        color: #333;
-    }
-    
-    /* Couleurs spécifiques des boutons */
-    .btn-bw { background-color: #555 !important; color: white; } /* Gris pour N&B */
-    .btn-col { background-color: #FF0000 !important; color: white; } /* ROUGE VIF pour Couleur */
+    /* Organisation des boutons de prix */
+    .price-section {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #eee;
+    }
+    .price-label {
+        font-weight: bold;
+        font-size: 0.9em;
+        margin-bottom: 5px;
+        display: block;
+        color: #333;
+    }
+    
+    /* Couleurs spécifiques des boutons */
+    .btn-bw { background-color: #555 !important; color: white; } /* Gris pour N&B */
+    .btn-col { background-color: #FF0000 !important; color: white; } /* ROUGE VIF pour Couleur */
 
-    /* Styles Dashboard Admin */
-    #dashboard table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em; }
-    #dashboard th, #dashboard td { padding: 8px; text-align: left; }
-    #dashboard th { background-color: #f2f2f2; border: 1px solid #ddd; }
-    #dashboard td { border: 1px solid #ddd; }
-    
-    /* Styles spécifiques pour le regroupement/accordéon */
-    .order-group-row {
-        cursor: pointer;
-        background-color: #e9e9e9; /* Gris clair pour les entêtes de groupe */
-        font-weight: bold;
-        border-bottom: 2px solid #ccc;
-    }
-    .order-group-row:hover {
-        background-color: #ddd;
-    }
-    .order-details-row {
-        display: none; /* Caché par défaut */
-        background-color: #f9f9f9; /* Couleur pour les détails */
-    }
-    .order-details-row td {
-        padding-left: 30px; /* Décalage pour le détail */
-        font-weight: normal;
-        border-top: none; /* Pas de bordure supérieure entre détails */
-    }
-    .order-details-row:last-child td {
-        border-bottom: 1px solid #ddd; /* Bordure inférieure à la fin du groupe */
-    }
+    /* Styles Dashboard Admin */
+    #dashboard table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em; }
+    #dashboard th, #dashboard td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    #dashboard th { background-color: #f2f2f2; }
+    
+    /* Boutons de filtres du dashboard (Mise à jour police/style) */
+    .filter-btn { 
+        margin: 5px; 
+        cursor: pointer; 
+        padding: 8px 15px; 
+        border-radius: 4px; 
+        border: 1px solid #ccc; 
+        background: #eee;
+        font-family: inherit; /* Utilise la police principale du corps */
+        font-weight: bold; /* Pour imiter le style des boutons de commande */
+        text-transform: uppercase;
+    }
+    .active-filter { background-color: #0099ff; color: white; border-color: #007acc; }
+    .btn-archive { background-color: #666; color: white; }
 
-    /* Boutons de filtres du dashboard */
-    .filter-btn { 
-        margin: 5px; 
-        cursor: pointer; 
-        padding: 8px 15px; 
-        border-radius: 4px; 
-        border: 1px solid #ccc; 
-        background: #eee;
-        font-family: inherit;
-        font-weight: bold;
-        text-transform: uppercase;
-    }
-    .active-filter { background-color: #0099ff; color: white; border-color: #007acc; } /* Bleu pour actif */
-    .btn-archive { background-color: #666; color: white; }
+    /* ROUGE VIF pour les boutons de connexion Admin */
+    #show-login-btn, #admin-login-btn {
+        background-color: #FF0000 !important; 
+        color: white !important;
+    }
 
-    /* ROUGE VIF pour les boutons de connexion Admin */
-    #show-login-btn, #admin-login-btn {
-        background-color: #FF0000 !important; 
-        color: white !important;
-    }
-
-    /* --- Styles de la Modale (Doit être cachée par défaut) --- */
-    .modal-overlay {
-        display: none; /* CECI DOIT ÊTRE PRÉSENT ET FONCTIONNEL */
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background-color: rgba(0,0,0,0.7);
-        z-index: 1000;
-        justify-content: center;
-        align-items: center;
-    }
-    .modal-content {
-        background: white;
-        padding: 25px;
-        border-radius: 8px;
-        width: 90%;
-        max-width: 400px;
-        text-align: center;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
-    .modal-content input {
-        width: 100%;
-        padding: 10px;
-        margin: 10px 0;
-        box-sizing: border-box;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-    }
-    .btn-confirm { background-color: #0099ff; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; width: 100%; font-size: 16px; margin-top: 10px;}
-    .btn-cancel { background-color: #aaa; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; margin-top: 10px; width: 100%; }
+    /* --- Styles de la Modale (Fenêtre de formulaire) --- */
+    .modal-overlay {
+        display: none; /* Caché par défaut */
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-color: rgba(0,0,0,0.7);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+    .modal-content {
+        background: white;
+        padding: 25px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 400px;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+    .modal-content input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    .btn-confirm { background-color: #0099ff; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; width: 100%; font-size: 16px; margin-top: 10px;}
+    .btn-cancel { background-color: #aaa; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; margin-top: 10px; width: 100%; }
 </style>
 </head>
 <body>
@@ -125,57 +102,59 @@
 <h1 class="title">Commande de kits de survie</h1>
 
 <div id="admin-tab" style="text-align:center; margin-bottom:10px;">
-  <button id="show-login-btn" class="button-lydia">Espace Admin</button>
+  <button id="show-login-btn" class="button-lydia">Espace Admin</button>
 </div>
 
 <div id="admin-login-form" style="display:none; margin-top:20px; text-align:center;">
-  <input type="email" id="admin-email" placeholder="Email admin"><br><br>
-  <input type="password" id="admin-password" placeholder="Mot de passe"><br><br>
-  <button type="button" id="admin-login-btn" class="button-lydia">Se connecter</button>
-  <p id="admin-login-error" style="color:red;"></p>
+  <input type="email" id="admin-email" placeholder="Email admin"><br><br>
+  <input type="password" id="admin-password" placeholder="Mot de passe"><br><br>
+  <button type="button" id="admin-login-btn" class="button-lydia">Se connecter</button>
+  <p id="admin-login-error" style="color:red;"></p>
 </div>
 
 <div class="courses-container" id="courses"></div>
 
 <div id="order-modal" class="modal-overlay">
-    <div class="modal-content">
-        <h2 id="modal-title">Vos informations</h2>
-        <p id="modal-desc" style="font-size:0.9em; color:#666; margin-bottom:15px;"></p>
-        
-        <input type="text" id="input-nom" placeholder="Votre Nom (ex: Dupont)">
-        <input type="text" id="input-prenom" placeholder="Votre Prénom (ex: Marie)">
-        <input type="email" id="input-email" placeholder="Votre Email (pour confirmation)">
-        
-        <button id="confirm-order-btn" class="btn-confirm">Valider et Payer via Lydia</button>
-        <button onclick="closeModal()" class="btn-cancel">Annuler</button>
-    </div>
+    <div class="modal-content">
+        <h2 id="modal-title">Vos informations</h2>
+        <p id="modal-desc" style="font-size:0.9em; color:#666; margin-bottom:15px;"></p>
+        
+        <input type="text" id="input-nom" placeholder="Votre Nom (ex: Dupont)">
+        <input type="text" id="input-prenom" placeholder="Votre Prénom (ex: Marie)">
+        <input type="email" id="input-email" placeholder="Votre Email (pour confirmation)">
+        
+        <button id="confirm-order-btn" class="btn-confirm">Valider et Payer via Lydia</button>
+        <button onclick="closeModal()" class="btn-cancel">Annuler</button>
+    </div>
 </div>
 
 <div id="dashboard" style="display:none; margin-top:20px; padding: 20px; background: #fff;">
-  <h2>Gestion des commandes (Groupées par client - Du plus récent au plus ancien)</h2>
-  
-  <div style="margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px;">
-    <button onclick="loadOrders('pending')" class="filter-btn active-filter" id="btn-pending">📋 À TRAITER (En attente)</button>
-    <button onclick="loadOrders('archive')" class="filter-btn btn-archive" id="btn-archive">🗄️ ARCHIVES (Payées)</button>
-    <button onclick="loadOrders('all')" class="filter-btn" id="btn-all">Voir Tout</button>
-    
-    <button onclick="auth.signOut()" class="filter-btn" style="float:right; background:red; color:white; border:none;">Déconnexion</button>
-  </div>
+  <h2>Gestion des commandes</h2>
+  
+  <div style="margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+    <button onclick="loadOrders('pending')" class="filter-btn active-filter" id="btn-pending">📋 À TRAITER (En attente)</button>
+    <button onclick="loadOrders('archive')" class="filter-btn btn-archive" id="btn-archive">🗄️ ARCHIVES (Payées)</button>
+    <button onclick="loadOrders('all')" class="filter-btn" id="btn-all">Voir Tout</button>
+    
+    <button onclick="auth.signOut()" class="filter-btn" style="float:right; background:red; color:white; border:none;">Déconnexion</button>
+  </div>
 
-  <div style="overflow-x:auto;">
-      <table>
-        <thead>
-          <tr class="order-group-header">
-            <th>Date (Plus Récent)</th>
-            <th>Client (Commandes)</th>
-            <th>Email</th>
-            <th>Statut Global</th>
-            <th style="width:10%;">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="orders-table"></tbody>
-      </table>
-  </div>
+  <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Email</th>
+            <th>Kit / Cours</th>
+            <th>Détail du Prix</th> <th>Statut</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="orders-table"></tbody>
+      </table>
+  </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -183,382 +162,287 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <script>
-  // 🔹 Config Firebase (Vérifiez si cette config est toujours la bonne)
-  const firebaseConfig = {
-    apiKey: "AIzaSyD6G1fbaPTLr7t2gABLA5MoeG1HP3QCuKg",
-    authDomain: "projet-pedago-adcn.firebaseapp.com",
-    projectId: "projet-pedago-adcn",
-    storageBucket: "projet-pedago-adcn.appspot.com",
-    messagingSenderId: "124299875258",
-    appId: "1:124299875258:web:981376bd8c6cf4ce4c4383"
-  };
+  // 🔹 Config Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyD6G1fbaPTLr7t2gABLA5MoeG1HP3QCuKg",
+    authDomain: "projet-pedago-adcn.firebaseapp.com",
+    projectId: "projet-pedago-adcn",
+    storageBucket: "projet-pedago-adcn.appspot.com",
+    messagingSenderId: "124299875258",
+    appId: "1:124299875258:web:981376bd8c6cf4ce4c4383"
+  };
 
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
 
-  // 🔹 Lien Lydia
-  const LYDIA_LINK = "https://pots.lydia.me/collect/commandes-tableaux-recap-9985755/fr";
+  // 🔹 Lien Lydia
+  const LYDIA_LINK = "https://pots.lydia.me/collect/commandes-tableaux-recap-9985755/fr";
 
-  // 🔹 Liste des cours
-  const courses = [
-    {
-      name: "UE1 Biopathologies tissulaires, illustrations et moyens d’exploration", 
-      description: "Kit de Survie", 
-      priceBW: "4,45€",       
-      priceBWR: "5€",         
-      priceCol: "9,90€",     
-      priceColR: "10€"       
-    },
-    {
-      name: "UE2 Bases moléculaires, cellulaires et tissulaires des traitements médicamenteux", 
-      description: "Kit de Survie", 
-      priceBW: "3,75€",
-      priceBWR: "4€",
-      priceCol: "7,80€",
-      priceColR: "8€"
-    },
-    {
-      name: "UE3 Tissus sanguins et système immunitaire", 
-      description: "Kit de Survie", 
-      priceBW: "3,05€",
-      priceBWR: "3,50€",
-      priceCol: "5,70€",
-      priceColR: "6€"
-    }
-  ];
+  // 🔹 Liste des cours
+  const courses = [
+    {
+      name: "UE1 Biopathologies tissulaires, illustrations et moyens d’exploration", 
+      description: "Kit de Survie", 
+      priceBW: "4,45€",       
+      priceBWR: "5€",         
+      priceCol: "9,90€",     
+      priceColR: "10€"       
+    },
+    {
+      name: "UE2 Bases moléculaires, cellulaires et tissulaires des traitements médicamenteux", 
+      description: "Kit de Survie", 
+      priceBW: "3,75€",
+      priceBWR: "4€",
+      priceCol: "7,80€",
+      priceColR: "8€"
+    },
+    {
+      name: "UE3 Tissus sanguins et système immunitaire", 
+      description: "Kit de Survie", 
+      priceBW: "3,05€",
+      priceBWR: "3,50€",
+      priceCol: "5,70€",
+      priceColR: "6€"
+    }
+  ];
 
-  // Variables temporaires
-  let currentSelectedCourse = null;
-  let currentSelectedType = null;
-  let currentSelectedPrice = null;
+  // Variables temporaires
+  let currentSelectedCourse = null;
+  let currentSelectedType = null;
+  let currentSelectedPrice = null;
 
-  // Fonction de traduction pour le Dashboard
-  function formatTypeForDashboard(type) {
-      if (type === "Noir & Blanc (Exact)") return "Normal N&B";
-      if (type === "Noir & Blanc (Arrondi)") return "Arrondi N&B";
-      if (type === "Couleur (Exact)") return "Normal Couleurs";
-      if (type === "Couleur (Arrondi)") return "Arrondi Couleurs";
-      return type;
-  }
+  // Fonction de traduction pour le Dashboard (pour correspondre à la demande utilisateur)
+  function formatTypeForDashboard(type) {
+      if (type === "Noir & Blanc (Exact)") return "Normal Noir & Blanc";
+      if (type === "Noir & Blanc (Arrondi)") return "Arrondi Noir & Blanc";
+      if (type === "Couleur (Exact)") return "Normal Couleurs";
+      if (type === "Couleur (Arrondi)") return "Arrondi Couleurs";
+      return type; // Fallback (au cas où le format change)
+  }
 
-  // 🔹 Charger les cours (Vue Client)
-  function loadCourses() {
-    const container = document.getElementById("courses");
-    container.innerHTML = "";
-    container.style.display = "flex"; // S'assurer que le conteneur est visible
-    
-    courses.forEach(c => { 
-      const div = document.createElement("div");
-      div.classList.add("course-card");
-      
-      div.innerHTML = `
-        <h3>${c.name}</h3>
-        <p>${c.description}</p>
-        
-        <div class="price-section">
-            <span class="price-label">🖨️ Noir & Blanc</span>
-            <button class="button-lydia btn-bw" onclick="initModal('${c.name}', 'nb_exact', '${c.priceBW}')">
-                Exact (${c.priceBW})
-            </button>
-            <button class="button-lydia btn-bw" onclick="initModal('${c.name}', 'nb_arrondi', '${c.priceBWR}')">
-                Arrondi (${c.priceBWR})
-            </button>
-        </div>
+  // 🔹 Charger les cours (Vue Client)
+  function loadCourses() {
+    const container = document.getElementById("courses");
+    container.innerHTML = "";
+    courses.forEach(c => { 
+      const div = document.createElement("div");
+      div.classList.add("course-card");
+      
+      div.innerHTML = `
+        <h3>${c.name}</h3>
+        <p>${c.description}</p>
+        
+        <div class="price-section">
+            <span class="price-label">🖨️ Noir & Blanc</span>
+            <button class="button-lydia btn-bw" onclick="initModal('${c.name}', 'nb_exact', '${c.priceBW}')">
+                Exact (${c.priceBW})
+            </button>
+            <button class="button-lydia btn-bw" onclick="initModal('${c.name}', 'nb_arrondi', '${c.priceBWR}')">
+                Arrondi (${c.priceBWR})
+            </button>
+        </div>
 
-        <div class="price-section">
-            <span class="price-label">🌈 Couleur</span>
-            <button class="button-lydia btn-col" onclick="initModal('${c.name}', 'col_exact', '${c.priceCol}')">
-                Exact (${c.priceCol})
-            </button>
-            <button class="button-lydia btn-col" onclick="initModal('${c.name}', 'col_arrondi', '${c.priceColR}')">
-                Arrondi (${c.priceColR})
-            </button>
-        </div>
-      `;
-      container.appendChild(div);
-    });
-  }
+        <div class="price-section">
+            <span class="price-label">🌈 Couleur</span>
+            <button class="button-lydia btn-col" onclick="initModal('${c.name}', 'col_exact', '${c.priceCol}')">
+                Exact (${c.priceCol})
+            </button>
+            <button class="button-lydia btn-col" onclick="initModal('${c.name}', 'col_arrondi', '${c.priceColR}')">
+                Arrondi (${c.priceColR})
+            </button>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+  }
 
-  // 🔹 Gestion de la Modale
-  const modal = document.getElementById("order-modal");
-  const inputNom = document.getElementById("input-nom");
-  const inputPrenom = document.getElementById("input-prenom");
-  const inputEmail = document.getElementById("input-email");
+  // 🔹 Gestion de la Modale
+  const modal = document.getElementById("order-modal");
+  const inputNom = document.getElementById("input-nom");
+  const inputPrenom = document.getElementById("input-prenom");
+  const inputEmail = document.getElementById("input-email");
 
-  function initModal(courseName, typeKey, priceValue) {
-      currentSelectedCourse = courses.find(c => c.name === courseName);
-      let typeLabel = "";
-      // Les labels stockés dans Firebase
-      if(typeKey === 'nb_exact') typeLabel = "Noir & Blanc (Exact)";
-      if(typeKey === 'nb_arrondi') typeLabel = "Noir & Blanc (Arrondi)";
-      if(typeKey === 'col_exact') typeLabel = "Couleur (Exact)";
-      if(typeKey === 'col_arrondi') typeLabel = "Couleur (Arrondi)";
+  function initModal(courseName, typeKey, priceValue) {
+      currentSelectedCourse = courses.find(c => c.name === courseName);
+      let typeLabel = "";
+      // Les labels stockés dans Firebase
+      if(typeKey === 'nb_exact') typeLabel = "Noir & Blanc (Exact)";
+      if(typeKey === 'nb_arrondi') typeLabel = "Noir & Blanc (Arrondi)";
+      if(typeKey === 'col_exact') typeLabel = "Couleur (Exact)";
+      if(typeKey === 'col_arrondi') typeLabel = "Couleur (Arrondi)";
 
-      currentSelectedType = typeLabel;
-      currentSelectedPrice = priceValue;
-      
-      document.getElementById("modal-title").innerText = "Finaliser la commande";
-      document.getElementById("modal-desc").innerText = `Choix : ${courseName}\nType : ${typeLabel}\nPrix : ${priceValue}`;
-      modal.style.display = "flex";
-  }
+      currentSelectedType = typeLabel;
+      currentSelectedPrice = priceValue;
+      
+      document.getElementById("modal-title").innerText = "Finaliser la commande";
+      document.getElementById("modal-desc").innerText = `Choix : ${courseName}\nType : ${typeLabel}\nPrix : ${priceValue}`;
+      modal.style.display = "flex";
+  }
 
-  function closeModal() {
-      modal.style.display = "none";
-      inputNom.value = ""; inputPrenom.value = ""; inputEmail.value = "";
-  }
+  function closeModal() {
+      modal.style.display = "none";
+      inputNom.value = ""; inputPrenom.value = ""; inputEmail.value = "";
+  }
 
-  // 🔹 Validation Commande
-  document.getElementById("confirm-order-btn").addEventListener("click", async () => {
-      const nom = inputNom.value.trim();
-      const prenom = inputPrenom.value.trim();
-      const email = inputEmail.value.trim();
+  // 🔹 Validation Commande
+  document.getElementById("confirm-order-btn").addEventListener("click", async () => {
+      const nom = inputNom.value.trim();
+      const prenom = inputPrenom.value.trim();
+      const email = inputEmail.value.trim();
 
-      if(!nom || !prenom || !email) {
-          alert("Merci de remplir tous les champs.");
-          return;
-      }
+      if(!nom || !prenom || !email) {
+          alert("Merci de remplir tous les champs.");
+          return;
+      }
 
-      const btn = document.getElementById("confirm-order-btn");
-      btn.innerText = "Enregistrement...";
-      btn.disabled = true;
+      const btn = document.getElementById("confirm-order-btn");
+      btn.innerText = "Enregistrement...";
+      btn.disabled = true;
 
-      try {
-        await db.collection("orders").add({
-          cours: currentSelectedCourse.name,
-          type: currentSelectedType,
-          prix: currentSelectedPrice,
-          nom: nom,
-          prenom: prenom,
-          email: email,
-          statut: "en attente", 
-          date: new Date().toISOString()
-        });
-        alert("Commande enregistrée ! Vous allez être redirigé vers Lydia.");
-        window.location.href = LYDIA_LINK; 
-      } catch(e) {
-        console.error(e);
-        alert("Erreur : " + e.message);
-        btn.innerText = "Valider et Payer via Lydia";
-        btn.disabled = false;
-      }
-  });
+      try {
+        await db.collection("orders").add({
+          cours: currentSelectedCourse.name,
+          type: currentSelectedType,
+          prix: currentSelectedPrice,
+          nom: nom,
+          prenom: prenom,
+          email: email,
+          statut: "en attente", 
+          date: new Date().toISOString()
+        });
+        alert("Commande enregistrée ! Vous allez être redirigé vers Lydia.");
+        window.location.href = LYDIA_LINK; 
+      } catch(e) {
+        console.error(e);
+        alert("Erreur : " + e.message);
+        btn.innerText = "Valider et Payer via Lydia";
+        btn.disabled = false;
+      }
+  });
 
-  loadCourses();
+  loadCourses();
 
-  // ==============================================
-  // 🔹 GESTION INTERFACE ADMIN
-  // ==============================================
-  
-  const loginForm = document.getElementById("admin-login-form");
-  const dashboard = document.getElementById("dashboard");
+  // ==============================================
+  // 🔹 GESTION INTERFACE ADMIN
+  // ==============================================
+  
+  const loginForm = document.getElementById("admin-login-form");
+  const dashboard = document.getElementById("dashboard");
 
-  document.getElementById("show-login-btn").addEventListener("click", () => {
-    if(dashboard.style.display === "block") return; 
-    loginForm.style.display = (loginForm.style.display === "none") ? "block" : "none";
-  });
+  document.getElementById("show-login-btn").addEventListener("click", () => {
+    if(dashboard.style.display === "block") return; 
+    loginForm.style.display = (loginForm.style.display === "none") ? "block" : "none";
+  });
 
-  document.getElementById("admin-login-btn").addEventListener("click", (e) => {
-    e.preventDefault();
-    const email = document.getElementById("admin-email").value.trim();
-    const password = document.getElementById("admin-password").value;
-    auth.signInWithEmailAndPassword(email, password).catch(err => {
-        document.getElementById("admin-login-error").innerText = "Erreur de connexion.";
-    });
-  });
+  document.getElementById("admin-login-btn").addEventListener("click", (e) => {
+    e.preventDefault();
+    const email = document.getElementById("admin-email").value.trim();
+    const password = document.getElementById("admin-password").value;
+    auth.signInWithEmailAndPassword(email, password).catch(err => {
+        document.getElementById("admin-login-error").innerText = "Erreur de connexion.";
+    });
+  });
 
-  auth.onAuthStateChanged(user => {
-    if(user){
-      loginForm.style.display = "none";
-      document.getElementById("courses").style.display = "none"; 
-      dashboard.style.display = "block";
-      document.getElementById("show-login-btn").innerText = "Admin : " + user.email;
-      loadOrders('pending'); // CHARGEMENT PAR DÉFAUT : Commandes à traiter
-    } else {
-      dashboard.style.display = "none";
-      document.getElementById("courses").style.display = "flex"; // Doit afficher les cartes des cours
-      document.getElementById("show-login-btn").innerText = "Connexion Admin";
-    }
-  });
+  auth.onAuthStateChanged(user => {
+    if(user){
+      loginForm.style.display = "none";
+      document.getElementById("courses").style.display = "none"; 
+      dashboard.style.display = "block";
+      document.getElementById("show-login-btn").innerText = "Admin : " + user.email;
+      loadOrders('pending'); // CHARGEMENT PAR DÉFAUT : Commandes à traiter
+    } else {
+      dashboard.style.display = "none";
+      document.getElementById("courses").style.display = "block"; 
+      document.getElementById("show-login-btn").innerText = "Connexion Admin";
+    }
+  });
 
+  // 🔹 Charger les commandes (Logique "Archives" vs "À traiter")
+  async function loadOrders(filterMode = 'pending') {
+    const table = document.getElementById("orders-table");
+    table.innerHTML = "<tr><td colspan='8' style='text-align:center;'>Chargement...</td></tr>";
+    
+    // Gestion des classes des boutons (visuel)
+    document.getElementById('btn-pending').className = 'filter-btn' + (filterMode === 'pending' ? ' active-filter' : '');
+    document.getElementById('btn-archive').className = 'filter-btn btn-archive' + (filterMode === 'archive' ? ' active-filter' : '');
+    document.getElementById('btn-all').className = 'filter-btn' + (filterMode === 'all' ? ' active-filter' : '');
 
-  // 💡 Fonction pour regrouper et afficher les commandes
-  function renderGroupedOrders(groupedOrders, filterMode) {
-    const table = document.getElementById("orders-table");
-    table.innerHTML = "";
+    try {
+      let query = db.collection("orders");
 
-    if (Object.keys(groupedOrders).length === 0) {
-      table.innerHTML = "<tr><td colspan='5' style='text-align:center; padding:20px;'>Aucune commande dans cette section.</td></tr>";
-      return;
-    }
+      if (filterMode === 'pending') {
+        // Mode "À Traiter" : Seulement les non payées
+        query = query.where("statut", "==", "en attente");
+      } else if (filterMode === 'archive') {
+        // Mode "Archive" : Seulement les payées
+        query = query.where("statut", "==", "payé");
+      } else {
+        // Mode "Tout" : Trié par date
+        query = query.orderBy("date", "desc");
+      }
 
-    // Tri par la date de la commande la plus récente du groupe
-    const sortedKeys = Object.keys(groupedOrders).sort((keyA, keyB) => {
-      return new Date(groupedOrders[keyB].latestDate) - new Date(groupedOrders[keyA].latestDate);
-    });
+      const snapshot = await query.get();
+      
+      table.innerHTML = ""; 
+      if (snapshot.empty) {
+        table.innerHTML = "<tr><td colspan='8' style='text-align:center; padding:20px;'>Aucune commande dans cette section.</td></tr>";
+        return;
+      }
 
-    sortedKeys.forEach(key => {
-      const group = groupedOrders[key];
-      const orders = group.orders;
-      const firstOrder = orders[0].data; 
-      const numOrders = orders.length;
-      
-      // Sécurisation pour l'affichage
-      const nomAffichage = firstOrder.nom ? firstOrder.nom.toUpperCase() : "INCONNU";
-      const prenomAffichage = firstOrder.prenom ? firstOrder.prenom : "Inconnu";
-      
-      const hasPending = orders.some(o => o.data.statut === "en attente");
-      const statusColor = hasPending ? "#e60000" : "green";
-      const globalStatus = hasPending ? "EN ATTENTE" : "PAYÉ (Archivé)";
-      
-      // 1. Ligne de Tête de Groupe (Accordeon)
-      const groupRow = document.createElement("tr");
-      groupRow.classList.add("order-group-row");
-      groupRow.setAttribute("data-group-key", key); 
-      groupRow.setAttribute("onclick", `toggleOrders('${key}')`);
-      groupRow.setAttribute("id", `group-${key}`);
+      snapshot.forEach(doc => {
+        const o = doc.data();
+        const tr = document.createElement("tr");
+        
+        const color = o.statut === "payé" ? "green" : "#e60000";
+        const nomAffichage = o.nom ? o.nom.toUpperCase() : "-";
+        const prenomAffichage = o.prenom ? o.prenom : "-";
+        const prixAffichage = o.prix ? ` (${o.prix})` : ""; 
+        
+        const formattedType = formatTypeForDashboard(o.type); // Utilisation de la fonction de formatage
 
-      groupRow.innerHTML = `
-        <td>${new Date(group.latestDate).toLocaleDateString()} <small>${new Date(group.latestDate).toLocaleTimeString()}</small></td>
-        <td>${prenomAffichage} <strong>${nomAffichage}</strong> (${numOrders} Cmd(s)) <span style="font-size: 0.8em; float: right;">[+]</span></td>
-        <td>${firstOrder.email || 'N/A'}</td>
-        <td style="color:${statusColor}; font-weight:bold;">${globalStatus}</td>
-        <td style="text-align:center;">
-            ${hasPending && filterMode === 'pending' ? 'VOIR DÉTAILS' : '-'}
-        </td>
-      `;
-      table.appendChild(groupRow);
+        // Si la commande est archivée (payée), on n'affiche plus le bouton de validation
+        let actionButton = '';
+        if(o.statut === "payé") {
+            actionButton = '✅ Archivé';
+        } else {
+            actionButton = `<button onclick="validatePayment('${doc.id}')" style="cursor:pointer; background:#4CAF50; color:white; border:none; padding:5px 10px; border-radius:4px;">Valider Paiement</button>`;
+        }
 
-      // 2. Lignes de Détail (Cachées)
-      orders.forEach(order => {
-        const o = order.data;
-        const detailRow = document.createElement("tr");
-        detailRow.classList.add("order-details-row");
-        detailRow.classList.add(`details-for-${key}`); // Classe pour afficher/cacher
+        tr.innerHTML = `
+          <td>${new Date(o.date).toLocaleDateString()} <small>${new Date(o.date).toLocaleTimeString()}</small></td>
+          <td><strong>${nomAffichage}</strong></td>
+          <td>${prenomAffichage}</td>
+          <td>${o.email}</td>
+          <td>${o.cours}</td>
+          <td>${formattedType}${prixAffichage}</td> <td style="color:${color}; font-weight:bold;">${o.statut.toUpperCase()}</td>
+          <td style="text-align:center;">${actionButton}</td>
+        `;
+        table.appendChild(tr);
+      });
 
-        const color = o.statut === "payé" ? "green" : "#e60000";
-        const prixAffichage = o.prix ? ` (${o.prix})` : ""; 
-        const formattedType = formatTypeForDashboard(o.type);
+    } catch(e) {
+      console.error("Erreur : ", e);
+      if(e.message.includes("index")) {
+        alert("ATTENTION ADMIN : Un index Firestore est manquant pour trier par date. Regardez la console du navigateur.");
+      } else {
+        alert("Erreur chargement : " + e.message);
+      }
+    }
+  }
 
-        let actionButton = '';
-        if(o.statut === "payé") {
-            actionButton = '✅ Archivé';
-        } else {
-            // Bouton individuel pour chaque commande non payée
-            actionButton = `<button onclick="event.stopPropagation(); validatePayment('${order.id}')" style="cursor:pointer; background:#4CAF50; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:normal;">Valider Paiement</button>`;
-        }
-
-
-        detailRow.innerHTML = `
-          <td colspan="1">${new Date(o.date).toLocaleDateString()} ${new Date(o.date).toLocaleTimeString()}</td>
-          <td>${o.cours}</td>
-          <td>${formattedType}${prixAffichage}</td>
-          <td style="color:${color}; font-weight:bold;">${o.statut.toUpperCase()}</td>
-          <td style="text-align:center;">${actionButton}</td>
-        `;
-        table.appendChild(detailRow);
-      });
-  }
-  
-  // 💡 Correction de la fonction Accordéon
-  window.toggleOrders = function(key) {
-    const details = document.querySelectorAll(`.details-for-${key}`);
-    const groupHeader = document.getElementById(`group-${key}`);
-    const arrowSpan = groupHeader.querySelector('span');
-
-    if (details.length === 0) return;
-
-    // On vérifie l'état de la première ligne pour décider d'ouvrir ou de fermer
-    const isVisible = details[0].style.display === 'table-row';
-
-    details.forEach(row => {
-      // Utilise 'table-row' pour le mode d'affichage des lignes de tableau
-      row.style.display = isVisible ? 'none' : 'table-row'; 
-    });
-
-    arrowSpan.innerText = isVisible ? '[+]' : '[-]';
-  };
-
-
-  // 🔹 Charger les commandes
-  async function loadOrders(filterMode = 'pending') {
-    const table = document.getElementById("orders-table");
-    table.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Chargement...</td></tr>";
-    
-    // Gestion des classes des boutons (visuel)
-    document.getElementById('btn-pending').className = 'filter-btn' + (filterMode === 'pending' ? ' active-filter' : '');
-    document.getElementById('btn-archive').className = 'filter-btn btn-archive' + (filterMode === 'archive' ? ' active-filter' : '');
-    document.getElementById('btn-all').className = 'filter-btn' + (filterMode === 'all' ? ' active-filter' : '');
-
-    try {
-      let query = db.collection("orders");
-
-      if (filterMode === 'pending') {
-        query = query.where("statut", "==", "en attente");
-      } else if (filterMode === 'archive') {
-        query = query.where("statut", "==", "payé");
-      }
-      
-      // Tri par date (Nécessite l'index Firestore)
-      query = query.orderBy("date", "desc");
-      
-
-      const snapshot = await query.get();
-      
-      // LOGIQUE DE REGROUPEMENT
-      const groupedOrders = {};
-
-      if (snapshot.empty) {
-        table.innerHTML = "<tr><td colspan='5' style='text-align:center; padding:20px;'>Aucune commande dans cette section.</td></tr>";
-        return;
-      }
-
-      snapshot.forEach(doc => {
-        const o = doc.data();
-        
-        // CORRECTION DU BUG CRITIQUE : Sécurisation des champs clients
-        const nom = (o.nom?.toLowerCase() || 'inconnu').trim();
-        const prenom = (o.prenom?.toLowerCase() || 'inconnu').trim();
-        const email = (o.email?.toLowerCase() || 'inconnu').trim();
-        const clientKey = `${nom}-${prenom}-${email}`; // Clé de regroupement
-        
-        if (!groupedOrders[clientKey]) {
-          groupedOrders[clientKey] = {
-            orders: [],
-            latestDate: o.date
-          };
-        }
-        // Ajoute la commande au groupe (conserve doc.id pour validation)
-        groupedOrders[clientKey].orders.push({ id: doc.id, data: o });
-      });
-      
-      // Appel de la fonction de rendu
-      renderGroupedOrders(groupedOrders, filterMode);
-
-    } catch(e) {
-      console.error("Erreur : ", e);
-      // Affichage de l'alerte d'index pour l'admin (si un autre index est nécessaire)
-      if(e.message.includes("index")) {
-        alert("ATTENTION ADMIN : Un index Firestore est manquant pour trier par date. Regardez la console du navigateur. (L'index composite statut:asc, date:desc est requis)");
-      } else {
-        alert("Erreur chargement : " + e.message);
-      }
-    }
-  }
-
-  // Valider une commande (la fait passer dans les archives)
-  window.validatePayment = async function(docId) {
-    if(confirm("Avez-vous reçu l'argent ? Cette action déplacera la commande dans les Archives.")) {
-      try {
-        await db.collection("orders").doc(docId).update({ statut: "payé" });
-        // Recharge la vue actuelle
-        const currentFilter = document.querySelector('.active-filter').id.replace('btn-', '');
-        loadOrders(currentFilter); 
-      } catch(e) {
-        alert("Erreur : " + e.message);
-      }
-    }
-  }
+  // Valider une commande (la fait passer dans les archives)
+  window.validatePayment = async function(docId) {
+    if(confirm("Avez-vous reçu l'argent ? Cette action déplacera la commande dans les Archives.")) {
+      try {
+        await db.collection("orders").doc(docId).update({ statut: "payé" });
+        // Recharge la vue actuelle (donc la commande va disparaître de "À traiter")
+        loadOrders('pending'); 
+      } catch(e) {
+        alert("Erreur : " + e.message);
+      }
+    }
+  }
 </script>
 
 </body>
