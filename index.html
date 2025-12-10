@@ -234,13 +234,13 @@
   let currentSelectedType = null;
   let currentSelectedPrice = null;
 
-  // Fonction de traduction pour le Dashboard (pour correspondre à la demande utilisateur)
+  // Fonction de traduction pour le Dashboard
   function formatTypeForDashboard(type) {
       if (type === "Noir & Blanc (Exact)") return "Normal N&B";
       if (type === "Noir & Blanc (Arrondi)") return "Arrondi N&B";
       if (type === "Couleur (Exact)") return "Normal Couleurs";
       if (type === "Couleur (Arrondi)") return "Arrondi Couleurs";
-      return type; // Fallback (au cas où le format change)
+      return type;
   }
 
   // 🔹 Charger les cours (Vue Client)
@@ -381,13 +381,13 @@
   });
 
 
-  // 💡 NOUVEAU : Fonction pour regrouper et afficher les commandes
+  // 💡 Fonction pour regrouper et afficher les commandes
   function renderGroupedOrders(groupedOrders, filterMode) {
     const table = document.getElementById("orders-table");
     table.innerHTML = "";
 
     if (Object.keys(groupedOrders).length === 0) {
-      table.innerHTML = "<tr><td colspan='5' style='text-align:center; padding:20px;'>Aucune commande dans cette section.</td></tr>"; // 5 colonnes pour le nouveau tableau
+      table.innerHTML = "<tr><td colspan='5' style='text-align:center; padding:20px;'>Aucune commande dans cette section.</td></tr>";
       return;
     }
 
@@ -399,10 +399,13 @@
     sortedKeys.forEach(key => {
       const group = groupedOrders[key];
       const orders = group.orders;
-      const firstOrder = orders[0].data; // Utilise la première pour les infos client (elles sont les mêmes)
+      const firstOrder = orders[0].data; 
       const numOrders = orders.length;
-      const nomAffichage = firstOrder.nom ? firstOrder.nom.toUpperCase() : "-";
-      const prenomAffichage = firstOrder.prenom ? firstOrder.prenom : "-";
+      
+      // Sécurisation pour l'affichage
+      const nomAffichage = firstOrder.nom ? firstOrder.nom.toUpperCase() : "INCONNU";
+      const prenomAffichage = firstOrder.prenom ? firstOrder.prenom : "Inconnu";
+      
       const hasPending = orders.some(o => o.data.statut === "en attente");
       const statusColor = hasPending ? "#e60000" : "green";
       const globalStatus = hasPending ? "EN ATTENTE" : "PAYÉ (Archivé)";
@@ -410,21 +413,23 @@
       // 1. Ligne de Tête de Groupe (Accordeon)
       const groupRow = document.createElement("tr");
       groupRow.classList.add("order-group-row");
+      // ATTENTION : On doit utiliser une classe plutôt que l'ID de groupe pour l'action de déploiement
+      groupRow.setAttribute("data-group-key", key); 
       groupRow.setAttribute("onclick", `toggleOrders('${key}')`);
       groupRow.setAttribute("id", `group-${key}`);
 
       groupRow.innerHTML = `
         <td>${new Date(group.latestDate).toLocaleDateString()} <small>${new Date(group.latestDate).toLocaleTimeString()}</small></td>
         <td>${prenomAffichage} <strong>${nomAffichage}</strong> (${numOrders} Cmd(s)) <span style="font-size: 0.8em; float: right;">[+]</span></td>
-        <td>${firstOrder.email}</td>
+        <td>${firstOrder.email || 'N/A'}</td>
         <td style="color:${statusColor}; font-weight:bold;">${globalStatus}</td>
         <td style="text-align:center;">
-          ${hasPending && filterMode === 'pending' ? `<button onclick="event.stopPropagation(); validatePayment('${orders[0].id}')" style="cursor:pointer; background:#4CAF50; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:normal;">Valider la plus récente</button>` : '-'}
+            ${hasPending && filterMode === 'pending' ? 'VOIR DÉTAILS' : '-'}
         </td>
       `;
       table.appendChild(groupRow);
 
-      // 2. Lignes de Détail (Cachées - 3 colonnes de détail + 2 colonnes vides pour alignement)
+      // 2. Lignes de Détail (Cachées)
       orders.forEach(order => {
         const o = order.data;
         const detailRow = document.createElement("tr");
@@ -439,6 +444,7 @@
         if(o.statut === "payé") {
             actionButton = '✅ Archivé';
         } else {
+            // CORRECTION ICI : Bouton individuel pour chaque commande non payée
             actionButton = `<button onclick="event.stopPropagation(); validatePayment('${order.id}')" style="cursor:pointer; background:#4CAF50; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:normal;">Valider Paiement</button>`;
         }
 
@@ -454,7 +460,7 @@
       });
   }
   
-  // 💡 NOUVEAU : Fonction pour ouvrir/fermer le détail des commandes
+  // 💡 CORRECTION DU BUG D'ACCORDÉON : Fonction pour ouvrir/fermer le détail des commandes
   window.toggleOrders = function(key) {
     const details = document.querySelectorAll(`.details-for-${key}`);
     const groupHeader = document.getElementById(`group-${key}`);
@@ -462,11 +468,12 @@
 
     if (details.length === 0) return;
 
-    // On vérifie l'état de la première ligne de détail pour déterminer si le groupe est ouvert
+    // On vérifie l'état de la première ligne pour décider d'ouvrir ou de fermer
     const isVisible = details[0].style.display === 'table-row';
 
     details.forEach(row => {
-      row.style.display = isVisible ? 'none' : 'table-row';
+      // Utilise 'table-row' pour le mode d'affichage des lignes de tableau
+      row.style.display = isVisible ? 'none' : 'table-row'; 
     });
 
     arrowSpan.innerText = isVisible ? '[+]' : '[-]';
@@ -476,7 +483,7 @@
   // 🔹 Charger les commandes (Logique "Archives" vs "À traiter")
   async function loadOrders(filterMode = 'pending') {
     const table = document.getElementById("orders-table");
-    table.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Chargement...</td></tr>"; // 5 colonnes pour le nouveau tableau
+    table.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Chargement...</td></tr>";
     
     // Gestion des classes des boutons (visuel)
     document.getElementById('btn-pending').className = 'filter-btn' + (filterMode === 'pending' ? ' active-filter' : '');
@@ -494,13 +501,13 @@
         query = query.where("statut", "==", "payé");
       }
       
-      // 💡 TRi systématique par date (plus récent en haut)
+      // TRi systématique par date (plus récent en haut)
       query = query.orderBy("date", "desc");
       
 
       const snapshot = await query.get();
       
-      // 💡 LOGIQUE DE REGROUPEMENT
+      // LOGIQUE DE REGROUPEMENT
       const groupedOrders = {};
 
       if (snapshot.empty) {
@@ -510,22 +517,24 @@
 
       snapshot.forEach(doc => {
         const o = doc.data();
-        const nom = (o.nom || '').toLowerCase().trim();
-        const prenom = (o.prenom || '').toLowerCase().trim();
-        const email = (o.email || '').toLowerCase().trim();
+        
+        // Sécurisation des champs pour éviter l'erreur 'undefined'
+        const nom = (o.nom?.toLowerCase() || 'inconnu').trim();
+        const prenom = (o.prenom?.toLowerCase() || 'inconnu').trim();
+        const email = (o.email?.toLowerCase() || 'inconnu').trim();
         const clientKey = `${nom}-${prenom}-${email}`; // Clé de regroupement
         
         if (!groupedOrders[clientKey]) {
           groupedOrders[clientKey] = {
             orders: [],
-            latestDate: o.date // La date est déjà triée de la plus récente à la plus ancienne
+            latestDate: o.date
           };
         }
         // Ajoute la commande au groupe (conserve doc.id pour validation)
         groupedOrders[clientKey].orders.push({ id: doc.id, data: o });
       });
       
-      // 💡 Appel de la nouvelle fonction de rendu
+      // Appel de la fonction de rendu
       renderGroupedOrders(groupedOrders, filterMode);
 
     } catch(e) {
