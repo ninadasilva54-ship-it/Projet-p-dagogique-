@@ -37,7 +37,7 @@
     .btn-col, #show-login-btn, #admin-login-btn {
         background-color: #FF0000 !important; 
         color: white !important;
-        border: 1px solid #FF0000 !important; /* Ajout d'une bordure pour la cohérence */
+        border: 1px solid #FF0000 !important;
     }
 
     /* ⚫ GRIS FONCÉ pour les boutons Noir & Blanc */
@@ -47,12 +47,39 @@
         border: 1px solid #555 !important;
     }
 
-    /* Styles Dashboard Admin */
-    #dashboard table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em; }
-    #dashboard th, #dashboard td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    /* Styles Dashboard Admin OPTIMISÉS */
+    #dashboard table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+        font-size: 0.85em; /* Rétrecissement de la police */
+        table-layout: fixed; /* Force le respect des largeurs */
+    }
+    #dashboard th, #dashboard td {
+        border: 1px solid #ddd;
+        padding: 6px 4px; /* Rétrecissement du padding */
+        text-align: left;
+        overflow: hidden;
+        text-overflow: ellipsis; /* Couper les textes trop longs */
+        white-space: nowrap; /* Empêcher le retour à la ligne */
+    }
     #dashboard th { background-color: #f2f2f2; }
     
-    /* Boutons de filtres du dashboard (Mise à jour police/style) */
+    /* Suppression de l'overflow-x sur le conteneur du tableau (pour éviter le défilement) */
+    .dashboard-table-container { overflow-x: visible !important; }
+
+    /* Définition des largeurs des colonnes pour qu'elles tiennent sur un écran standard */
+    #orders-table th:nth-child(1), #orders-table td:nth-child(1) { width: 12%; } /* Date */
+    #orders-table th:nth-child(2), #orders-table td:nth-child(2) { width: 9%; } /* Nom */
+    #orders-table th:nth-child(3), #orders-table td:nth-child(3) { width: 9%; } /* Prénom */
+    #orders-table th:nth-child(4), #orders-table td:nth-child(4) { width: 15%; } /* Email */
+    #orders-table th:nth-child(5), #orders-table td:nth-child(5) { width: 25%; } /* Kit / Cours */
+    #orders-table th:nth-child(6), #orders-table td:nth-child(6) { width: 10%; } /* Détail Prix */
+    #orders-table th:nth-child(7), #orders-table td:nth-child(7) { width: 8%; } /* Statut */
+    #orders-table th:nth-child(8), #orders-table td:nth-child(8) { width: 12%; text-align: center; } /* Action */
+
+
+    /* Boutons de filtres du dashboard */
     .filter-btn { 
         margin: 5px; 
         cursor: pointer; 
@@ -69,7 +96,7 @@
 
     /* --- Styles de la Modale (Fenêtre de formulaire) --- */
     .modal-overlay {
-        display: none; /* Caché par défaut, mais aussi masqué en HTML pour priorité */
+        display: none;
         position: fixed;
         top: 0; left: 0;
         width: 100%; height: 100%;
@@ -144,7 +171,7 @@
     <button onclick="auth.signOut()" class="filter-btn" style="float:right; background:red; color:white; border:none;">Déconnexion</button>
   </div>
 
-  <div style="overflow-x:auto;">
+  <div class="dashboard-table-container">
       <table>
         <thead>
           <tr>
@@ -153,7 +180,7 @@
             <th>Prénom</th>
             <th>Email</th>
             <th>Kit / Cours</th>
-            <th>Détail du Prix</th> <th>Statut</th>
+            <th>Prix Détail</th> <th>Statut</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -219,10 +246,10 @@
 
   // Fonction de traduction pour le Dashboard
   function formatTypeForDashboard(type) {
-      if (type === "Noir & Blanc (Exact)") return "Normal Noir & Blanc";
-      if (type === "Noir & Blanc (Arrondi)") return "Arrondi Noir & Blanc";
-      if (type === "Couleur (Exact)") return "Normal Couleurs";
-      if (type === "Couleur (Arrondi)") return "Arrondi Couleurs";
+      if (type === "Noir & Blanc (Exact)") return "N&B Exact";
+      if (type === "Noir & Blanc (Arrondi)") return "N&B Arrondi";
+      if (type === "Couleur (Exact)") return "Couleur Exact";
+      if (type === "Couleur (Arrondi)") return "Couleur Arrondi";
       return type;
   }
 
@@ -400,7 +427,7 @@
         const color = o.statut === "payé" ? "green" : "#e60000";
         const nomAffichage = o.nom ? o.nom.toUpperCase() : "-";
         const prenomAffichage = o.prenom ? o.prenom : "-";
-        const prixAffichage = o.prix ? ` (${o.prix})` : ""; 
+        const prixAffichage = o.prix ? `${o.prix}` : ""; 
         
         const formattedType = formatTypeForDashboard(o.type);
 
@@ -409,16 +436,16 @@
         if(o.statut === "payé") {
             actionButton = '✅ Archivé';
         } else {
-            actionButton = `<button onclick="validatePayment('${doc.id}')" style="cursor:pointer; background:#4CAF50; color:white; border:none; padding:5px 10px; border-radius:4px;">Valider Paiement</button>`;
+            actionButton = `<button onclick="validatePayment('${doc.id}')" style="cursor:pointer; background:#4CAF50; color:white; border:none; padding:5px 10px; border-radius:4px; font-size:10px;">Valider</button>`;
         }
 
         tr.innerHTML = `
-          <td>${new Date(o.date).toLocaleDateString()} <small>${new Date(o.date).toLocaleTimeString()}</small></td>
+          <td>${new Date(o.date).toLocaleDateString()}</td>
           <td><strong>${nomAffichage}</strong></td>
           <td>${prenomAffichage}</td>
           <td>${o.email}</td>
           <td>${o.cours}</td>
-          <td>${formattedType}${prixAffichage}</td> <td style="color:${color}; font-weight:bold;">${o.statut.toUpperCase()}</td>
+          <td>${formattedType} (${prixAffichage})</td> <td style="color:${color}; font-weight:bold;">${o.statut.toUpperCase()}</td>
           <td style="text-align:center;">${actionButton}</td>
         `;
         table.appendChild(tr);
