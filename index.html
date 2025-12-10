@@ -33,9 +33,17 @@
         color: #333;
     }
     
-    /* Couleurs spécifiques des boutons */
-    .btn-bw { background-color: #555 !important; color: white; } /* Gris pour N&B */
-    .btn-col { background-color: #FF0000 !important; color: white; } /* ROUGE VIF pour Couleur */
+    /* 🌟 COULEURS PERSONNALISÉES AVEC !IMPORTANT POUR FORCER LA PRIORITÉ 🌟 */
+    .btn-bw { background-color: #555 !important; color: white !important; } /* Gris Foncé pour N&B */
+    .btn-col { background-color: #FF0000 !important; color: white !important; } /* ROUGE VIF pour Couleur */
+
+    /* ROUGE VIF pour les boutons de connexion Admin */
+    #show-login-btn, #admin-login-btn {
+        background-color: #FF0000 !important; 
+        color: white !important;
+    }
+    /* Archive en Gris pour contraste */
+    .btn-archive { background-color: #666 !important; color: white !important; }
 
     /* Styles Dashboard Admin */
     #dashboard table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em; }
@@ -50,21 +58,16 @@
         border-radius: 4px; 
         border: 1px solid #ccc; 
         background: #eee;
-        font-family: inherit; /* Utilise la police principale du corps */
-        font-weight: bold; /* Pour imiter le style des boutons de commande */
+        font-family: inherit;
+        font-weight: bold;
         text-transform: uppercase;
     }
-    .active-filter { background-color: #0099ff; color: white; border-color: #007acc; }
-    .btn-archive { background-color: #666; color: white; }
+    .active-filter { background-color: #0099ff !important; color: white !important; border-color: #007acc; }
 
-    /* ROUGE VIF pour les boutons de connexion Admin */
-    #show-login-btn, #admin-login-btn {
-        background-color: #FF0000 !important; 
-        color: white !important;
-    }
 
     /* --- Styles de la Modale (Fenêtre de formulaire) --- */
     .modal-overlay {
+        /* ... propriétés inchangées ... */
         display: none; /* Caché par défaut */
         position: fixed;
         top: 0; left: 0;
@@ -114,7 +117,7 @@
 
 <div class="courses-container" id="courses"></div>
 
-<div id="order-modal" class="modal-overlay">
+<div id="order-modal" class="modal-overlay" style="display:none;">
     <div class="modal-content">
         <h2 id="modal-title">Vos informations</h2>
         <p id="modal-desc" style="font-size:0.9em; color:#666; margin-bottom:15px;"></p>
