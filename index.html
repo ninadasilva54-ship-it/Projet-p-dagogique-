@@ -6,8 +6,7 @@
 <title>Commande de kits de survie</title>
 <link rel="stylesheet" href="style.css">
 <style>
-    /* --- AJOUTS CSS ORIGINAUX ET NOUVEAUX --- */
-    
+    /* --- Styles pour le Dashboard Admin --- */
     /* Styles des cartes de cours */
     .course-card h3 {
         white-space: normal;
@@ -184,7 +183,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <script>
-  // 🔹 Config Firebase
+  // 🔹 Config Firebase (ASSUREZ-VOUS QUE C'EST LA BONNE CONFIG)
   const firebaseConfig = {
     apiKey: "AIzaSyD6G1fbaPTLr7t2gABLA5MoeG1HP3QCuKg",
     authDomain: "projet-pedago-adcn.firebaseapp.com",
@@ -413,7 +412,7 @@
       // 1. Ligne de Tête de Groupe (Accordeon)
       const groupRow = document.createElement("tr");
       groupRow.classList.add("order-group-row");
-      // ATTENTION : On doit utiliser une classe plutôt que l'ID de groupe pour l'action de déploiement
+      // Ajout du listener pour l'accordéon
       groupRow.setAttribute("data-group-key", key); 
       groupRow.setAttribute("onclick", `toggleOrders('${key}')`);
       groupRow.setAttribute("id", `group-${key}`);
@@ -444,7 +443,7 @@
         if(o.statut === "payé") {
             actionButton = '✅ Archivé';
         } else {
-            // CORRECTION ICI : Bouton individuel pour chaque commande non payée
+            // Bouton individuel pour chaque commande non payée
             actionButton = `<button onclick="event.stopPropagation(); validatePayment('${order.id}')" style="cursor:pointer; background:#4CAF50; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:normal;">Valider Paiement</button>`;
         }
 
@@ -460,7 +459,7 @@
       });
   }
   
-  // 💡 CORRECTION DU BUG D'ACCORDÉON : Fonction pour ouvrir/fermer le détail des commandes
+  // 💡 Correction de la fonction Accordéon
   window.toggleOrders = function(key) {
     const details = document.querySelectorAll(`.details-for-${key}`);
     const groupHeader = document.getElementById(`group-${key}`);
@@ -480,7 +479,7 @@
   };
 
 
-  // 🔹 Charger les commandes (Logique "Archives" vs "À traiter")
+  // 🔹 Charger les commandes
   async function loadOrders(filterMode = 'pending') {
     const table = document.getElementById("orders-table");
     table.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Chargement...</td></tr>";
@@ -494,14 +493,12 @@
       let query = db.collection("orders");
 
       if (filterMode === 'pending') {
-        // Mode "À Traiter" : Seulement les non payées
         query = query.where("statut", "==", "en attente");
       } else if (filterMode === 'archive') {
-        // Mode "Archive" : Seulement les payées
         query = query.where("statut", "==", "payé");
       }
       
-      // TRi systématique par date (plus récent en haut)
+      // Tri par date (Nécessite l'index Firestore)
       query = query.orderBy("date", "desc");
       
 
@@ -518,7 +515,7 @@
       snapshot.forEach(doc => {
         const o = doc.data();
         
-        // Sécurisation des champs pour éviter l'erreur 'undefined'
+        // CORRECTION DU BUG CRITIQUE : Sécurisation des champs clients
         const nom = (o.nom?.toLowerCase() || 'inconnu').trim();
         const prenom = (o.prenom?.toLowerCase() || 'inconnu').trim();
         const email = (o.email?.toLowerCase() || 'inconnu').trim();
@@ -539,7 +536,7 @@
 
     } catch(e) {
       console.error("Erreur : ", e);
-      // Affichage de l'alerte d'index pour l'admin
+      // Affichage de l'alerte d'index pour l'admin (si toujours le cas)
       if(e.message.includes("index")) {
         alert("ATTENTION ADMIN : Un index Firestore est manquant pour trier par date. Regardez la console du navigateur. L'index requis est 'statut, date' ou 'date' seul.");
       } else {
