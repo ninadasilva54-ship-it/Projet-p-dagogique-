@@ -373,11 +373,11 @@
 
       // Tri des plus RÉCENTES aux plus ANCIENNES pour tous les modes
       if (filterMode === 'pending') {
-        query = query.where("statut", "==", "en attente").orderBy("date", "desc"); // <<< Tri Descendant (Récent)
+        query = query.where("statut", "==", "en attente").orderBy("date", "desc"); 
       } else if (filterMode === 'archive') {
-        query = query.where("statut", "==", "payé").orderBy("date", "desc"); // <<< Tri Descendant (Récent)
+        query = query.where("statut", "==", "payé").orderBy("date", "desc"); 
       } else {
-        query = query.orderBy("date", "desc"); // <<< Tri Descendant (Récent)
+        query = query.orderBy("date", "desc");
       } 
 
       const snapshot = await query.get();
@@ -397,7 +397,7 @@
         const prenomAffichage = o.prenom ? o.prenom : "-";
         const prixAffichage = o.prix ? ` (${o.prix})` : ""; 
         
-        const formattedType = formatTypeForDashboard(o.type); // Utilisation de la fonction de formatage
+        const formattedType = formatTypeForDashboard(o.type);
 
         // Si la commande est archivée (payée), on n'affiche plus le bouton de validation
         let actionButton = '';
@@ -422,7 +422,7 @@
     } catch(e) {
       console.error("Erreur : ", e);
       if(e.message.includes("index")) {
-        alert("ATTENTION ADMIN : Un nouvel index Firestore est nécessaire (statut + date en descendant) pour afficher les commandes triées correctement. Suivez le lien dans la console du navigateur.");
+        alert("ATTENTION ADMIN : Un index Firestore est manquant pour trier les commandes (vérifiez la console du navigateur et créez l'index si l'alerte apparaît).");
       } else {
         alert("Erreur chargement : " + e.message);
       }
