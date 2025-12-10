@@ -129,7 +129,7 @@
 </div>
 
 <div id="dashboard" style="display:none; margin-top:20px; padding: 20px; background: #fff;">
-  <h2>Gestion des commandes (Du plus ancien au plus récent)</h2>
+  <h2>Gestion des commandes (Du plus récent au plus ancien)</h2>
   
   <div style="margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px;">
     <button onclick="loadOrders('pending')" class="filter-btn active-filter" id="btn-pending">📋 À TRAITER (En attente)</button>
@@ -371,15 +371,13 @@
     try {
       let query = db.collection("orders");
 
+      // Tri des plus RÉCENTES aux plus ANCIENNES pour tous les modes
       if (filterMode === 'pending') {
-        // Mode "À Traiter" : Seulement les non payées, Tri des plus ANCIENNES aux plus RÉCENTES
-        query = query.where("statut", "==", "en attente").orderBy("date", "asc"); 
+        query = query.where("statut", "==", "en attente").orderBy("date", "desc"); // <<< Tri Descendant (Récent)
       } else if (filterMode === 'archive') {
-        // Mode "Archive" : Seulement les payées, Tri des plus ANCIENNES aux plus RÉCENTES
-        query = query.where("statut", "==", "payé").orderBy("date", "asc"); 
+        query = query.where("statut", "==", "payé").orderBy("date", "desc"); // <<< Tri Descendant (Récent)
       } else {
-        // Mode "Tout" : Tri des plus ANCIENNES aux plus RÉCENTES
-        query = query.orderBy("date", "asc"); // <<< MODIFICATION ICI
+        query = query.orderBy("date", "desc"); // <<< Tri Descendant (Récent)
       } 
 
       const snapshot = await query.get();
@@ -424,7 +422,7 @@
     } catch(e) {
       console.error("Erreur : ", e);
       if(e.message.includes("index")) {
-        alert("ATTENTION ADMIN : Un index Firestore est manquant pour trier par date. Regardez la console du navigateur.");
+        alert("ATTENTION ADMIN : Un nouvel index Firestore est nécessaire (statut + date en descendant) pour afficher les commandes triées correctement. Suivez le lien dans la console du navigateur.");
       } else {
         alert("Erreur chargement : " + e.message);
       }
