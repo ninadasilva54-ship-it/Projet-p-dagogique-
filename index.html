@@ -42,7 +42,7 @@
     #dashboard th { background-color: #f2f2f2; border: 1px solid #ddd; }
     #dashboard td { border: 1px solid #ddd; }
     
-    /* Styles spécifiques pour le regroupement/accordéon (NOUVEAU) */
+    /* Styles spécifiques pour le regroupement/accordéon (CORRIGÉ) */
     .order-group-row {
         cursor: pointer;
         background-color: #e9e9e9; /* Gris clair pour les entêtes de groupe */
@@ -183,7 +183,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <script>
-  // 🔹 Config Firebase (ASSUREZ-VOUS QUE C'EST LA BONNE CONFIG)
+  // 🔹 Config Firebase (Gardez cette section à jour avec vos clés réelles)
   const firebaseConfig = {
     apiKey: "AIzaSyD6G1fbaPTLr7t2gABLA5MoeG1HP3QCuKg",
     authDomain: "projet-pedago-adcn.firebaseapp.com",
@@ -246,6 +246,9 @@
   function loadCourses() {
     const container = document.getElementById("courses");
     container.innerHTML = "";
+    // S'assurer que le conteneur est visible (pour corriger le problème d'affichage)
+    container.style.display = "flex"; 
+    
     courses.forEach(c => { 
       const div = document.createElement("div");
       div.classList.add("course-card");
@@ -401,7 +404,7 @@
       const firstOrder = orders[0].data; 
       const numOrders = orders.length;
       
-      // Sécurisation pour l'affichage
+      // Sécurisation pour l'affichage (nom/prénom)
       const nomAffichage = firstOrder.nom ? firstOrder.nom.toUpperCase() : "INCONNU";
       const prenomAffichage = firstOrder.prenom ? firstOrder.prenom : "Inconnu";
       
@@ -412,7 +415,6 @@
       // 1. Ligne de Tête de Groupe (Accordeon)
       const groupRow = document.createElement("tr");
       groupRow.classList.add("order-group-row");
-      // Ajout du listener pour l'accordéon
       groupRow.setAttribute("data-group-key", key); 
       groupRow.setAttribute("onclick", `toggleOrders('${key}')`);
       groupRow.setAttribute("id", `group-${key}`);
@@ -443,7 +445,7 @@
         if(o.statut === "payé") {
             actionButton = '✅ Archivé';
         } else {
-            // Bouton individuel pour chaque commande non payée
+            // Bouton individuel pour chaque commande non payée (CORRIGÉ)
             actionButton = `<button onclick="event.stopPropagation(); validatePayment('${order.id}')" style="cursor:pointer; background:#4CAF50; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:normal;">Valider Paiement</button>`;
         }
 
@@ -536,7 +538,7 @@
 
     } catch(e) {
       console.error("Erreur : ", e);
-      // Affichage de l'alerte d'index pour l'admin (si toujours le cas)
+      // Affichage de l'alerte d'index pour l'admin (si un autre index est nécessaire)
       if(e.message.includes("index")) {
         alert("ATTENTION ADMIN : Un index Firestore est manquant pour trier par date. Regardez la console du navigateur. L'index requis est 'statut, date' ou 'date' seul.");
       } else {
